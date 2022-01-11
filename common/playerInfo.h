@@ -11,12 +11,12 @@
 
 typedef struct
 {
-    char firstname[NAME_SIZE + 1];
-    char lastname[NAME_SIZE + 1];
+    int  wins;
     char code[CODE_LENGTH + 1];
 } infoStruct;
 
 infoStruct initInfo();
 void generateCode(char *);
+void displayHangman(char *);
 int randomInt(int, int);
 #endif //PRJ_HANGMANC_PLAYERINFO_H

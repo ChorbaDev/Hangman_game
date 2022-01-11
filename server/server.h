@@ -13,7 +13,7 @@ typedef struct
 {
     int communicationID;
     struct sockaddr_in connectedAddr;
-    gameConfigStruct *concertConfig;
+    gameConfigStruct *gameConfig;
 } connectionStruct;
 
 void *connectionThread(void *);
