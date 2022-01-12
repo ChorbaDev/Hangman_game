@@ -14,6 +14,7 @@
 
 #include "../common/style.h"
 #include "../common/playerInfo.c"
+#include "../common/hangman.c"
 #include "../common/stream.c"
 #include "client.h"
 
@@ -95,32 +96,27 @@ void connectedToServer(int fdSocket)
  * @param string the buffer that contain the string
  * @param serStream the buffer that will contain the serialized stream
  */
+int word_length;
 void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
 {
     size_t serStreamSize; // variable that will contain the size of setStream
     int bufSize;          // contain the return of recv()
     bool loop = 1;
     do{
-        init_stream(stream, SEND_WORD); // ask the server for a word
-        set_content(stream,"Hello from client");
+        init_stream(stream, ASK_FOR_WORD); // ask the server for a word
         serStreamSize = serialize_stream(stream, serStream);
-
         send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
-
         bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
         if (bufSize < 1)
         {
             loop = 0; // set the loop at false, this will make the client go back to the lobby
             continue; // go to the next iteration of this while loop
         }
-
         unserialize_stream(serStream, stream);
-        puts(stream->content);
-
-       // printf(FONT_BLUE "\n*------- PENDU -------*" FONT_DEFAULT
-      //  "\nChaque X correspond à une place réservée. Veuillez entrer le numéro d'une place ou 0.\n");
-       // displayHangman(stream->content); // display a table of all seats, it contain the header and the footer
-
+        word_length=*(int *) stream->content;
+        printf(FONT_BLUE "\n*------- PENDU -------*" FONT_DEFAULT);
+        displayHangman(word_length,fdSocket);
+        break;
     }while(loop);
 }
 /**
@@ -173,6 +169,14 @@ int promptString(char *buffer, int length)
         clearBuffer();
         return EXIT_FAILURE;
     }
+}
+/**
+ * Allow to enter text, and if the text entered is too long, then it will clear the buffer
+ * @param buffer the buffer to fill
+ */
+int promptChar(char *buffer)
+{
+    return promptString(buffer, 1);
 }
 /**
  * Function that clear the buffer of its content

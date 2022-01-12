@@ -4,7 +4,7 @@
 
 #include <string.h>
 #include "stream.h"
-#include "../server/hangman.h"
+#include "hangman.h"
 
 /**
  * Create a stream, initialize it, and return it
@@ -46,11 +46,12 @@ void set_content(stream_t *s, void *content)
     size_t len;
     switch (s->type)
     {
-        case SEND_LETTER:
-        case SEND_WORD:
+        case VERIFY_LETTER:
+        case SEND_HANGMAN:
             s->content= malloc(strlen((char *)content)*sizeof(char));
             memcpy(s->content, (char *)content, strlen((char *)content)+1);
             break;
+        case SEND_LENGTH:
         case INT:
             s->content = malloc(sizeof(int8_t));
             memcpy(s->content, content, 1);
@@ -86,15 +87,16 @@ size_t serialize_stream(stream_t *s, void *buffer)
         // if content is NULL
         case END_CONNECTION:
         case ERROR:
+        case ASK_FOR_WORD:
             return sizeof(uint8_t);
-        case SEND_LETTER:
-        case SEND_WORD:
+        case VERIFY_LETTER:
             len = strlen((char *)s->content);
             memcpy(buffer,s->content , len);               // copy content
             ((char *)buffer)[len] = '\0';              // set the last char as '\0' to end the string
             return sizeof(uint8_t) + sizeof(uint64_t) + len;
             // if content is an int
-        case INT:
+        case SEND_LENGTH:
+            case INT:
             memcpy(buffer, s->content, 1); // copy the int
             return sizeof(uint8_t) + sizeof(uint8_t);
 
@@ -117,12 +119,12 @@ void unserialize_stream(void *buffer, stream_t *s)
     switch (s->type)
     {
         // if content is an int
+        case SEND_LENGTH:
         case INT:
             s->content = malloc(sizeof(int8_t)); // allocate the size of an int
             memcpy(s->content, buffer, 1);       // copy the int
             break;
-        case SEND_LETTER:
-        case SEND_WORD:
+        case VERIFY_LETTER:
             len =  strlen((char *)buffer);                // get the length of the string
            // buffer += sizeof(uint64_t);                    // move is the buffer
             s->content = malloc((len + 1) * sizeof(char)); // allocate the size of the string

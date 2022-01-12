@@ -18,8 +18,8 @@
 
 #include "server.h"
 #include "../common/style.h"
+#include "../common/hangman.c"
 #include "../common/stream.c"
-#include "hangman.c"
 
 sem_t semaphore;
 bool loop = 1;
@@ -104,9 +104,10 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
     stream_t stream = create_stream(); // stream that is used with this client
     char serStream[STREAM_SIZE];       // serialized stream
     size_t serStreamSize;              // buffer that contain the serialized stream
-    int clientInt;
-    int wins;
     char code[CODE_LENGTH + 1];      // string for the code
+    char* word;
+    int wordsTotal = 0, wordsFileDescriptor;
+    char ** wordsList;
     while (loop)
     {
         // wait to receive a message from the client
@@ -117,19 +118,26 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
             continue;
         }
         unserialize_stream(serStream, &stream);
-        puts(stream.content);
         //the game
         switch (stream.type)
         {
+            // stop the loop that manage the client
             case END_CONNECTION:
-                // stop the loop that manage the client
                 loop = 0;
                 break;
-            case SEND_WORD:
-                init_stream(&stream,SEND_LETTER);
-                set_content(&stream,"Hello from server");
+            case ASK_FOR_WORD:
+                init_stream(&stream,SEND_LENGTH);
+                wordsFileDescriptor = openFile("hangmanwords.txt");
+                wordsList = readFile(wordsFileDescriptor, &wordsTotal);
+                int random = randomInt(0, wordsTotal);
+                close(wordsFileDescriptor);
+                printf("Mot choisi: %s",wordsList[random]);
+                set_content(&stream, (void *) strlen(wordsList[random]));
                 serStreamSize = serialize_stream(&stream, serStream);
                 send(communicationID, serStream, serStreamSize, 0); // send buffer to client
+                break;
+            case VERIFY_LETTER:
+                puts(stream.content);
                 break;
             default:
                 break;

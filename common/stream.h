@@ -23,8 +23,9 @@ enum
     INT,                           //? content : int
     SEND_DASHBOARD,
     SEND_HANGMAN,
-    SEND_WORD,
-    SEND_LETTER,
+    ASK_FOR_WORD,
+    VERIFY_LETTER,
+    SEND_LENGTH,
     ERROR,                         //? content : NULL
     SUCCESS,                       //? content : NULL
     END_CONNECTION,                //? content : NULL

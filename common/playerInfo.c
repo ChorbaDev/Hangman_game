@@ -15,9 +15,7 @@ infoStruct initInfo()
     return info;
 }
 
-void displayHangman(char *){
-    printf("\nwtf\n");
-}
+
 /**
  * Generate a code for a buffer
  * @param code the buffer that will contain the code string

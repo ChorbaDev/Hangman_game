@@ -6,7 +6,7 @@
 #define PRJ_HANGMANC_SERVER_H
 #include <netinet/in.h>
 #include <stdbool.h>
-#include "hangman.h"
+#include "../common/hangman.h"
 #include "../common/stream.h"
 
 typedef struct
