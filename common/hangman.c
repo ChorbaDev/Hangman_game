@@ -1,18 +1,23 @@
 //
 // Created by omar on 08/01/2022.
 //
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <curses.h>       // "Used the function "Getche()"
+#include <ctype.h>       // "Fuctions added to work with characters"
+#include <stdio.h>       // "Standard Header (In/Out)"
+#include <stdlib.h>      // "Standard Header"
+#include <string.h>      // "Manipulate Strings"
+#include <time.h>        // "Used the chronological time"
+#include <windows.h>     // "Used to the function "Sleep"
+#include <sys/socket.h>
 
 #include "../server/semaphore.h"
 #include "../server/server.h"
 #include "stream.h"
 #include "hangman.h"
 #include "playerInfo.c"
+#include "style.h"
 
 void displayHangman(int length,int fdSocket){
     stream_t stream;
@@ -175,4 +180,3 @@ gameConfigStruct initGame()
 
     return gameConfig;
 }
-
