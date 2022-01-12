@@ -17,7 +17,7 @@
 #include "playerInfo.c"
 #include "style.h"
 
-void displayHangman(int length,int fdSocket){
+void displayHangman(int length, int fdSocket) {
     stream_t stream;
     char serStream[STREAM_SIZE];
     size_t serStreamSize;
@@ -27,17 +27,18 @@ void displayHangman(int length,int fdSocket){
     }
     puts("\nDonner une lettre :");
     char *c;
-    int input=0;
-    while (!input || input==10)
+    int input = 0;
+    while (!input || input == 10)
         input = getchar();
-    char inputChar=(char) input;
-    stream.content=NULL;
-    init_stream(&stream,VERIFY_LETTER);
-    set_content(&stream,&inputChar);
+    char inputChar = (char) input;
+    stream.content = NULL;
+    init_stream(&stream, VERIFY_LETTER);
+    set_content(&stream, &inputChar);
     serStreamSize = serialize_stream(&stream, serStream);
     send(fdSocket, serStream, serStreamSize, 0); // send buffer to client
 }
-int openFile(const char * path) {
+
+int openFile(const char *path) {
     int fileDescriptor = open(path, O_RDONLY);
 
     if (fileDescriptor == -1) {
@@ -48,14 +49,14 @@ int openFile(const char * path) {
     return fileDescriptor;
 }
 
-char ** readFile(int fileDescriptor, int * wordsTotal) {
+char **readFile(int fileDescriptor, int *wordsTotal) {
     // Internal variables
     char temp = 0;
     int cursor = 0;
     ssize_t bytesRead;
 
     // Setting up pointers
-    char ** wordsList = malloc(20 * sizeof(char*));
+    char **wordsList = malloc(20 * sizeof(char *));
     *wordsTotal = 0;
 
     // Reading inside file
@@ -77,7 +78,7 @@ char ** readFile(int fileDescriptor, int * wordsTotal) {
                 wordsList[*wordsTotal][cursor] = '\0';
 
                 // Reallocate unused memory
-                wordsList[*wordsTotal] = (char*)realloc(wordsList[*wordsTotal], (cursor+1)* sizeof(char));
+                wordsList[*wordsTotal] = (char *) realloc(wordsList[*wordsTotal], (cursor + 1) * sizeof(char));
 
                 // Update the word count
                 (*wordsTotal)++;
@@ -102,14 +103,14 @@ int randomNumber(int from, int to) {
     return rand() % (to - from) + from;
 }
 
-char * getDashedWord(char * word) {
+char *getDashedWord(char *word) {
     int i = 0;
 
     // Get the word length
     size_t wordLength = strlen(word);
 
     // Allocate same memory to new dashed word
-    char * dashedWord = malloc(wordLength * sizeof(char));
+    char *dashedWord = malloc(wordLength * sizeof(char));
 
     // Dash the word
     for (i = 0; i < strlen(word); i++) {
@@ -119,11 +120,11 @@ char * getDashedWord(char * word) {
     return dashedWord;
 }
 
-void runGame(char * word) {
+void runGame(char *word) {
     int gameRunning = 1, availableTries = 10, mistake = 0;
     char letterTyped = 0;
 
-    char * dashedWord = getDashedWord(word);
+    char *dashedWord = getDashedWord(word);
 
     do {
         // Ask for a letter
@@ -136,9 +137,10 @@ void runGame(char * word) {
         // Check this try's results
         if (replacedLetters == 0) {
             // No letter has been replaced: wrong answer
-            availableTries--;
             mistake++;
-            printf("Wrong guess!\n");
+            wrongGuess(mistake);
+            availableTries--;
+
         } else {
             // Good guess, display the dashed word updated
             printf("Good guess!\n%s\n", dashedWord);
@@ -158,7 +160,8 @@ void runGame(char * word) {
     } while (gameRunning == 1);
 }
 
-int checkAnswer(char letterTyped, char * word, char * dashedWord) {
+/// need to check the validity with the bool change from server to client
+int checkAnswer(char letterTyped, char *word, char *dashedWord) {
     size_t wordLength = strlen(word);
     int replacedLetters = 0;
 
@@ -176,11 +179,138 @@ int checkAnswer(char letterTyped, char * word, char * dashedWord) {
 
     return replacedLetters;
 }
-gameConfigStruct initGame()
-{
-    gameConfigStruct gameConfig = *(gameConfigStruct *)malloc(sizeof(gameConfigStruct)); // allocate the size of a gameConfigStruct
-    for (int i = 0; i < PLAYERS_AMOUNT; i++)                                                 // init every player of the array
+
+gameConfigStruct initGame() {
+    gameConfigStruct gameConfig = *(gameConfigStruct *) malloc(
+            sizeof(gameConfigStruct)); // allocate the size of a gameConfigStruct
+    for (int i = 0;
+         i < PLAYERS_AMOUNT; i++)                                                 // init every player of the array
         gameConfig.players[i] = initInfo();
 
     return gameConfig;
 }
+//#############################################
+
+void wrongGuess(int mistake) {
+    printf("Wrong guess!\n");
+    switch (mistake) {
+        case 0:
+            //0 erreurs on doit juste print la potence
+            potence(Cont);
+            break;
+        case 1:
+            //1 erreur donc tete
+            Head(Cont);
+            break;
+        case 2:
+            //2 erreurs donc corps
+            Body(Cont);
+            break;
+        case 3:
+            //3 erreurs donc bras droit
+            rArm(Cont);
+            break;
+        case 4:
+            //4 erreurs donc bras gauche
+            lArm(Cont)
+            break;
+        case 5:
+            //5 erreurs donc jambe droite
+            rLeg(Cont);
+            break;
+        case 6:
+            //6 erreurs donc jambe gauche
+            lLeg(Cont);
+            break;
+        default:
+            //perdu
+            lLeg(Cont);
+    }
+}
+//##############################################################
+void potence(int Cont){
+    printf("    ┌");
+
+    for(Cont = 0; Cont < 5; Cont++)
+        printf("──────");
+
+    printf("┐ \n    │ \t\t\t\t   │ \n    │ \t\t\t\t   │");
+}
+void Head(int Cont){
+    Potence(Cont);
+    printf("\n    │ \t\t\t       ┌───┴───┐");
+    printf("\n    │ \t\t\t       │ ^   ^ │");
+    printf("\n    │ \t\t\t       │   .   │");
+    printf("\n    │ \t\t\t       │  ---  │");
+    printf("\n    │ \t\t\t       └───┬───┘");
+}
+void Body(int Cont){
+    Head(Cont);
+
+    for(Cont = 0; Cont < 2; Cont++)
+        printf("\n    │ \t\t\t\t   │ \n    │ \t\t\t\t   │");
+
+    printf("\n    │ \t\t\t\t   │");
+
+    for(Cont = 0; Cont < 4; Cont++)
+        printf("\n    │ \n    │");
+
+    printf("\n ───┴───\n");
+}
+void rArm(int Cont){
+    Head(Cont);
+
+    printf("\n    │ \t\t\t\t   │");
+    printf("\n    │ \t\t\t       ┌───┤");
+    for(Cont = 0; Cont < 2; Cont++)
+        printf("\n    │ \t\t\t       │   │");
+
+    printf("\n    │ \t\t\t       ┼   │");
+
+    for(Cont = 0; Cont < 4; Cont++)
+        printf("\n    │ \n    │");
+
+    printf("\n ───┴───\n");
+}
+void lArm(int Cont){
+    Head(Cont);
+
+    printf("\n    │ \t\t\t\t   │");
+    printf("\n    │ \t\t\t       ┌───┼───┐");
+
+    for(Cont = 0; Cont < 2; Cont++)
+        printf("\n    │ \t\t\t       │   │   │");
+
+    printf("\n    │ \t\t\t       ┼   │   ┼");
+}
+
+void rLeg(int Cont){
+    lArm(Cont);
+
+    printf("\n    │ \t\t\t          / \n    │ \t\t\t         /");
+    printf("\n    │ \t\t\t        / \n    │ \t\t\t       /");
+    printf("\n    │  \t\t\t      / \n    │ ");
+    printf("\n    │ \n    │ \n ───┴───\n");
+}
+
+void lLeg(int Cont){
+    Potence(Cont);
+
+    printf("\n    │ \t\t\t       ┌───┴───┐");
+    printf("\n    │ \t\t\t       │ x   x │");
+    printf("\n    │ \t\t\t       │   .   │");
+    printf("\n    │ \t\t\t       │   +   │");
+    printf("\n    │ \t\t\t       └───┬───┘");
+    printf("\n    │ \t\t\t\t└──┼──┘");
+    printf("\n    │ \t\t\t       ┌───┼───┐");
+
+    for(Cont = 0; Cont < 2; Cont++)
+        printf("\n    │ \t\t\t       │   │   │");
+
+    printf("\n    │ \t\t\t       ┼   │   ┼");
+    printf("\n    │ \t\t\t          / \\ \n    │ \t\t\t         /   \\");
+    printf("\n    │ \t\t\t        /     \\ \n    │ \t\t\t       /       \\");
+    printf("\n    │  \t\t\t      /         \\ \n    │ ");
+    printf("\n    │ \n    │ \n ───┴───\n");
+}
+

@@ -18,4 +18,25 @@ char * getDashedWord(char * word);
 void runGame(char * word);
 void displayHangman(int length,int fdSocket);
 int checkAnswer(char letterTyped, char * word, char * dashedWord);
+void wrongGuess(int mistake);
+/// PRITING BASIC STRUCTURE OF GALLOWS
+void Potence (int );
+
+/// PRITING HEAD
+void Head (int );
+
+/// PRITING BODY
+void Body (int );
+
+/// PRITING RIGHT ARM
+void rArm (int );
+
+/// PRITING LEFT ARM
+void lArm (int );
+
+/// PRITING RIGHT LEG
+void rLeg (int );
+
+/// PRITING LEFT LEG
+void lLeg (int );
 #endif //PRJ_HANGMANC_HANGMAN_H
