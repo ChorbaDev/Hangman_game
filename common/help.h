@@ -10,4 +10,5 @@ char ** readFile(int fileDescriptor, int * wordsTotal);
 void clearBuffer();
 int promptString(char *buffer, int length);
 int promptChar(char *buffer);
+int promptInt(char *buffer, int length, int min, int max);
 #endif //PRJ_HANGMANC_HELP_H

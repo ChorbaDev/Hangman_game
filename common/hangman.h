@@ -18,5 +18,4 @@ char * getDashedWord(char * word);
 void runGame(char * word);
 void displayHangman(int length,int fdSocket);
 int checkAnswer(char letterTyped, char * word, char * dashedWord);
-int16_t getIndexWhenCode(gameConfigStruct *, char *);
 #endif //PRJ_HANGMANC_HANGMAN_H

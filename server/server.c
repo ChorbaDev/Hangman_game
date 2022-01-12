@@ -11,12 +11,12 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <stddef.h>
-#include <pthread.h>
 #include <stdarg.h> // for infinite parameters
 #include <time.h>   // for random functions
-#include <semaphore.h>
+#include <pthread.h>
 
 #include "server.h"
+#include "semaphore.h"
 #include "../common/style.h"
 #include "../common/hangman.c"
 #include "../common/stream.c"

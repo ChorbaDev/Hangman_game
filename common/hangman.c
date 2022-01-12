@@ -13,7 +13,6 @@
 #include "stream.h"
 #include "hangman.h"
 #include "playerInfo.c"
-#include "help.c"
 
 void displayHangman(int length,int fdSocket){
     stream_t stream;
@@ -177,23 +176,3 @@ gameConfigStruct initGame()
     return gameConfig;
 }
 
-
-/**
- * Return the index or -1 of the seat that have a specified code
- * @param config the concert configuration
- * @param code the code that is searched
- * @return the index
- */
-int16_t getIndexWhenCode(gameConfigStruct *config, char *code)
-{
-    sem_wait(&semaphore); // block the access to the gameConfig
-    for (int i = 0; i < PLAYERS_AMOUNT; i++)
-        if (strcmp(config->players[i].code, code) == 0) // if the code match
-        {
-            sem_post(&semaphore); // free the access to the concertConfig
-            return i;             // we return the number of the seat
-        }
-    sem_post(&semaphore); // free the access to the concertConfig
-
-    return -1; // default return
-}
