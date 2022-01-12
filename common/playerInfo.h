@@ -17,5 +17,5 @@ typedef struct
 
 infoStruct initInfo();
 void generateCode(char *);
-int randomInt(int, int);
+int randomInt(int min, int max);
 #endif //PRJ_HANGMANC_PLAYERINFO_H

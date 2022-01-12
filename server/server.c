@@ -19,6 +19,7 @@
 #include "server.h"
 #include "../common/style.h"
 #include "../common/hangman.c"
+#include "../common/playerInfo.c"
 #include "../common/stream.c"
 
 sem_t semaphore;

@@ -5,24 +5,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-
-#include "../server/semaphore.h"
-#include "hangman.h"
-#include "../server/server.h"
-#include "stream.h"
-
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "../server/semaphore.h"
+#include "../server/server.h"
+#include "stream.h"
 #include "hangman.h"
-#include "../client/client.c"
+#include "playerInfo.c"
 
 void displayHangman(int length,int fdSocket){
     stream_t stream;
     char serStream[STREAM_SIZE];
     size_t serStreamSize;
     for (int i = 0; i < length; i++) {
-        printf("-");
+        printf("\n");
     }
     printf("\nDonner une lettre :");
     char* c;

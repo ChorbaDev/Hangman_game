@@ -171,14 +171,6 @@ int promptString(char *buffer, int length)
     }
 }
 /**
- * Allow to enter text, and if the text entered is too long, then it will clear the buffer
- * @param buffer the buffer to fill
- */
-int promptChar(char *buffer)
-{
-    return promptString(buffer, 1);
-}
-/**
  * Function that clear the buffer of its content
  */
 void clearBuffer()
