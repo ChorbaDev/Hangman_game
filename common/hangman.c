@@ -116,7 +116,7 @@ char * getDashedWord(char * word) {
 }
 
 void runGame(char * word) {
-    int gameRunning = 1, availableTries = 10;
+    int gameRunning = 1, availableTries = 10, mistake = 0;
     char letterTyped = 0;
 
     char * dashedWord = getDashedWord(word);
@@ -133,6 +133,7 @@ void runGame(char * word) {
         if (replacedLetters == 0) {
             // No letter has been replaced: wrong answer
             availableTries--;
+            mistake++;
             printf("Wrong guess!\n");
         } else {
             // Good guess, display the dashed word updated

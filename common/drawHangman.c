@@ -28,7 +28,7 @@ void Right_Leg (int );
 void Left_Leg (int );
 
 int main(){
-  int Cont=0;
+  int Cont=0, int mistake=0;
     printf("    \u250C");
 
     for(Cont = 0; Cont < 5; Cont++)
