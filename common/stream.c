@@ -42,7 +42,7 @@ void set_content(stream_t *s, void *content)
 {
     if (s->content != NULL) // free content allocation if not NULL
         free(s->content);
-
+    char * value;
     size_t len;
     switch (s->type)
     {
@@ -53,8 +53,9 @@ void set_content(stream_t *s, void *content)
             break;
         case SEND_LENGTH:
         case INT:
-            s->content = malloc(sizeof(int8_t));
-            memcpy(s->content, content, 1);
+            sprintf(value,"%lu", strlen((char *)content));
+            s->content = malloc(sizeof(strlen(value)));
+            memcpy(s->content, value, (int)sizeof(content));
             break;
         default:
             s->content = NULL;
@@ -121,8 +122,8 @@ void unserialize_stream(void *buffer, stream_t *s)
         // if content is an int
         case SEND_LENGTH:
         case INT:
-            s->content = malloc(sizeof(int8_t)); // allocate the size of an int
-            memcpy(s->content, buffer, 1);       // copy the int
+            s->content = malloc(sizeof(buffer)); // allocate the size of an int
+            memcpy(s->content, buffer, (int)sizeof(buffer));       // copy the int
             break;
         case VERIFY_LETTER:
             len =  strlen((char *)buffer);                // get the length of the string

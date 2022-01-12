@@ -5,13 +5,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 /**
  * Allow to enter text, and if the text entered is too long, then it will clear the buffer
  * @param buffer the buffer to fill
  */
 int promptChar(char *buffer)
 {
-    return promptString(buffer, 1);
+    char c;
+    c= getchar();
+    if (c)
+    {
+        puts("1");
+        char *lastCharPos = strchr(buffer, '\n');
+        if (lastCharPos != NULL)
+            *lastCharPos = '\0';
+        else
+            clearBuffer();
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        puts("@");
+        clearBuffer();
+        return EXIT_FAILURE;
+    }
 }
 /**
  * Allow to enter text, and if the text entered is too long, then it will clear the buffer

@@ -130,9 +130,11 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 wordsFileDescriptor = openFile("hangmanwords.txt");
                 wordsList = readFile(wordsFileDescriptor, &wordsTotal);
                 int random = randomNumber(0, wordsTotal);
+                char* chosenWord=wordsList[random];
                 close(wordsFileDescriptor);
-                printf("Mot choisi: %s",wordsList[random]);
-                set_content(&stream, (void *) strlen(wordsList[random]));
+                puts("Mot choisi: ");
+                puts(chosenWord);
+                set_content(&stream, chosenWord);
                 serStreamSize = serialize_stream(&stream, serStream);
                 send(communicationID, serStream, serStreamSize, 0); // send buffer to client
                 break;

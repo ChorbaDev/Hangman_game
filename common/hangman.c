@@ -3,7 +3,6 @@
 //
 #include <unistd.h>
 #include <fcntl.h>
-#include <curses.h>       // "Used the function "Getche()"
 #include <ctype.h>       // "Fuctions added to work with characters"
 #include <stdio.h>       // "Standard Header (In/Out)"
 #include <stdlib.h>      // "Standard Header"
@@ -22,8 +21,9 @@ void displayHangman(int length,int fdSocket){
     stream_t stream;
     char serStream[STREAM_SIZE];
     size_t serStreamSize;
+    puts("\nVotre mot est: ");
     for (int i = 0; i < length; i++) {
-        printf("\n");
+        printf("-");
     }
     printf("\nDonner une lettre :");
     char* c;

@@ -106,14 +106,16 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
         init_stream(stream, ASK_FOR_WORD); // ask the server for a word
         serStreamSize = serialize_stream(stream, serStream);
         send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+        puts("sent.");
         bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
+        puts("received.");
         if (bufSize < 1)
         {
             loop = 0; // set the loop at false, this will make the client go back to the lobby
             continue; // go to the next iteration of this while loop
         }
         unserialize_stream(serStream, stream);
-        word_length=*(int *) stream->content;
+        word_length= (int) (size_t) stream->content;
         printf(FONT_BLUE "\n*------- PENDU -------*" FONT_DEFAULT);
         displayHangman(word_length,fdSocket);
         break;
