@@ -11,10 +11,10 @@ gomme
 crayon
 livre
 bureau
-ordinateur
+Trousse
 clavier
 souris
 casque
-ventilateur
+Narrateur
 tablette
 chat

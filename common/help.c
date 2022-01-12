@@ -12,8 +12,7 @@
  */
 int promptChar(char *buffer)
 {
-    char c;
-    c= getchar();
+  /*  buffer= getchar();
     if (c)
     {
         puts("1");
@@ -29,7 +28,7 @@ int promptChar(char *buffer)
         puts("@");
         clearBuffer();
         return EXIT_FAILURE;
-    }
+    }*/
 }
 /**
  * Allow to enter text, and if the text entered is too long, then it will clear the buffer

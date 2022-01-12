@@ -25,11 +25,15 @@ void displayHangman(int length,int fdSocket){
     for (int i = 0; i < length; i++) {
         printf("-");
     }
-    printf("\nDonner une lettre :");
-    char* c;
-    promptChar(c);
+    puts("\nDonner une lettre :");
+    char *c;
+    int input=0;
+    while (!input || input==10)
+        input = getchar();
+    char inputChar=(char) input;
+    stream.content=NULL;
     init_stream(&stream,VERIFY_LETTER);
-    set_content(&stream,c);
+    set_content(&stream,&inputChar);
     serStreamSize = serialize_stream(&stream, serStream);
     send(fdSocket, serStream, serStreamSize, 0); // send buffer to client
 }
