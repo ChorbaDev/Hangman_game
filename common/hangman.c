@@ -9,7 +9,6 @@
 #include <stdlib.h>      // "Standard Header"
 #include <string.h>      // "Manipulate Strings"
 #include <time.h>        // "Used the chronological time"
-#include <windows.h>     // "Used to the function "Sleep"
 #include <sys/socket.h>
 
 #include "../server/semaphore.h"
