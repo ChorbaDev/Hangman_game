@@ -14,6 +14,7 @@
 
 #include "../common/style.h"
 #include "../common/playerInfo.c"
+#include "../common/help.c"
 #include "../common/hangman.c"
 #include "../common/stream.c"
 #include "client.h"

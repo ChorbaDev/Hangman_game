@@ -19,7 +19,6 @@
 #include "server.h"
 #include "../common/style.h"
 #include "../common/hangman.c"
-#include "../common/playerInfo.c"
 #include "../common/stream.c"
 
 sem_t semaphore;
@@ -130,7 +129,7 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 init_stream(&stream,SEND_LENGTH);
                 wordsFileDescriptor = openFile("hangmanwords.txt");
                 wordsList = readFile(wordsFileDescriptor, &wordsTotal);
-                int random = randomInt(0, wordsTotal);
+                int random = randomNumber(0, wordsTotal);
                 close(wordsFileDescriptor);
                 printf("Mot choisi: %s",wordsList[random]);
                 set_content(&stream, (void *) strlen(wordsList[random]));

@@ -7,7 +7,7 @@
 
 #define NAME_SIZE 100
 #define CODE_LENGTH 10
-#define PLAYERS_AMOUNT 3
+#define PLAYERS_AMOUNT 10
 
 typedef struct
 {
@@ -17,5 +17,4 @@ typedef struct
 
 infoStruct initInfo();
 void generateCode(char *);
-int randomInt(int min, int max);
 #endif //PRJ_HANGMANC_PLAYERINFO_H

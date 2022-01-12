@@ -14,9 +14,6 @@ typedef struct
 } gameConfigStruct;
 
 gameConfigStruct initGame();
-int openFile(const char * path);
-char ** readFile(int fileDescriptor, int * wordsTotal);
-int randomNumber(int from, int to);
 char * getDashedWord(char * word);
 void runGame(char * word);
 void displayHangman(int length,int fdSocket);

@@ -13,6 +13,7 @@
 #include "stream.h"
 #include "hangman.h"
 #include "playerInfo.c"
+#include "help.c"
 
 void displayHangman(int length,int fdSocket){
     stream_t stream;
