@@ -139,13 +139,23 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 wordsList = readFile(wordsFileDescriptor, &wordsTotal);
                 int random = randomNumber(0, wordsTotal);
                 char* chosenWord=wordsList[random];
-                initBoolMask((bool *) mask, strlen(chosenWord));
+                printf("%d\n",(int) strlen(chosenWord));
+                bool* boolbitch=(bool *) mask;
+                for (int i=0; i < strlen(chosenWord); i++){
+                    printf("%d\n", boolbitch[i]);
+                }
+
+                initBoolMask(boolbitch, strlen(chosenWord));
                 close(wordsFileDescriptor);
                 puts("Mot choisi: ");
                 puts(chosenWord);
+                puts("ln146");
                 set_content(&stream, chosenWord);
+                puts("ln147");
                 serStreamSize = serialize_stream(&stream, serStream);
+                puts("ln149");
                 send(communicationID, serStream, serStreamSize, 0); // send buffer to client
+                puts("word sent");
                 break;
             case VERIFY_LETTER:
                 character= ((char *) stream.content);
