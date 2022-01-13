@@ -20,7 +20,7 @@ void displayHangman(int length,int fdSocket);
 int checkAnswer(char letterTyped, char * word, char * dashedWord);
 void wrongGuess(int mistake);
 /// PRITING BASIC STRUCTURE OF GALLOWS
-void Potence (int );
+void potence (int );
 
 /// PRITING HEAD
 void Head (int );
@@ -39,4 +39,6 @@ void rLeg (int );
 
 /// PRITING LEFT LEG
 void lLeg (int );
+
+void perdu();
 #endif //PRJ_HANGMANC_HANGMAN_H

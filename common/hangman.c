@@ -148,6 +148,7 @@ void runGame(char *word) {
 
         // Check the game state
         if (strcmp(dashedWord, word) == 0) {
+            gagne();
             gameRunning = 0;
             printf("You win!");
         }
@@ -221,6 +222,7 @@ void wrongGuess(int mistake) {
         case 6:
             //6 erreurs donc jambe gauche
             lLeg(Cont);
+            perdu();
             break;
         default:
             //perdu
@@ -312,5 +314,63 @@ void lLeg(int Cont){
     printf("\n    │ \t\t\t        /     \\ \n    │ \t\t\t       /       \\");
     printf("\n    │  \t\t\t      /         \\ \n    │ ");
     printf("\n    │ \n    │ \n ───┴───\n");
+}
+
+void perdu(){
+    // affichage du mot et dire que le gars à perdu on lui propose de recommencer
+}
+void gagne(){
+    // affichage du message de victoire
+}
+void potenceGagnant(int Cont){
+    potence(Cont);
+    printf("\n    │ \t\t\t\t  /┴\\ \n    │ \t\t\t\t /   \\ \n    │ \t\t\t\t/     \\");
+    printf("\n    │ \t\t\t       └───────┘");
+    printf("\n    │ \t\t┌───────┐");
+    printf("\n    │      ┬    │ ^   ^ │    ┬    ");
+    printf("\n    │      │    │   .   │    │    ");
+    printf("\n    │      \\    │ [___] │    /   ");
+    printf("\n    │       \\   └───────┘   / ");
+    printf("\n    │ \t     \\      │      / ");
+    printf("\n    │ \t      \\─────│─────/ ");
+    printf("\n    │ \t\t    │ \n    │ \t\t    │ \n    │ \t\t    │");
+    printf("\n    │ \t\t   / \\ \n    │ \t\t  /   \\       ");
+    printf("\n    │ \t\t /     \\ \n    │ \t\t/       \\     ");
+    printf("\n ───┴───      ──┘       └──\n");
+}
+int Restart_Or_Exit() {
+    int Cont;
+    char Output;
+
+    do {
+        Output = getchar();
+
+        if (Output == 'n' || Output == 'N') {
+            system("clear");
+
+            printf("\n\n   ┌");
+
+            for (Cont = 0; Cont < 8; Cont++)
+                printf("──────");
+
+            printf("┐ \n   │");
+
+            printf("\t\t Bien joué!! A bientot!!");
+
+            printf("\t    │ \n   └");
+
+            for (Cont = 0; Cont < 8; Cont++)
+                printf("──────");
+
+            printf("┘ \n\n\n\n");
+
+            return 0;
+        }
+
+        if (Output == 'y' || Output == 'Y') {
+            system("clear");
+            return 10;
+        }
+    } while (Output != 'Y' && Output != 'y' && Output != 'N' && Output != 'n');
 }
 
