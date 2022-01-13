@@ -63,7 +63,7 @@ void connectedToServer(int fdSocket)
 
     do
     {
-        printf(FONT_BLUE "\n*------- BIENVENUE -------*" FONT_DEFAULT "\n" FONT_RED "0/" FONT_DEFAULT
+        printf(FONT_BLUE "\n*--------------------- BIENVENUE ---------------------*" FONT_DEFAULT "\n" FONT_RED "0/" FONT_DEFAULT
         " Quitter\n"
         "1/ Commencer une partie\n"
         "2/ Tableau de bord\n"
@@ -114,8 +114,8 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
         }
         unserialize_stream(serStream, stream);
         char* word= ((char *) stream->content);
+        puts(word);
         word_length= atoi(&word[strlen(word)-1]);
-        printf(FONT_BLUE "\n*------- PENDU -------*" FONT_DEFAULT);
         displayHangman(word_length,fdSocket);
         break;
     }while(loop);

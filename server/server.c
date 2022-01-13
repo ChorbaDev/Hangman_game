@@ -14,6 +14,7 @@
 #include <stdarg.h> // for infinite parameters
 #include <time.h>   // for random functions
 #include <pthread.h>
+#include <stdbool.h>
 
 #include "server.h"
 #include "semaphore.h"
@@ -23,13 +24,13 @@
 
 sem_t semaphore;
 bool loop = 1;
+
 /**
  * Main function that create the socket, create the concert, and manage client connections
  * @return exit status (EXIT_FAILURE || EXIT_SUCCESS)
  */
 int main(int argc, char *argv[]){
-    printf("Waiting...\n");
-
+    system("clear");
     int serverSocket = socket(PF_INET, SOCK_STREAM, 0);
     if (serverSocket < 0)
     {
@@ -60,6 +61,7 @@ int main(int argc, char *argv[]){
     srand((unsigned int)time(NULL));
 
 // Main loop
+    printf("Waiting...\n");
     int sockaddr_in_size = sizeof(struct sockaddr_in);
     while (loop)
     {
@@ -99,6 +101,10 @@ void *connectionThread(void *args)
     close(connection.communicationID);
     pthread_exit(NULL);
 }
+
+
+
+
 void clientConnected(int communicationID, gameConfigStruct *gameConfig)
 {
     stream_t stream = create_stream(); // stream that is used with this client
@@ -108,6 +114,8 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
     char* word;
     int wordsTotal = 0, wordsFileDescriptor;
     char ** wordsList;
+    char* character;
+    bool* mask=malloc(1 * sizeof(bool));
     while (loop)
     {
         // wait to receive a message from the client
@@ -131,6 +139,7 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 wordsList = readFile(wordsFileDescriptor, &wordsTotal);
                 int random = randomNumber(0, wordsTotal);
                 char* chosenWord=wordsList[random];
+                initBoolMask((bool *) mask, strlen(chosenWord));
                 close(wordsFileDescriptor);
                 puts("Mot choisi: ");
                 puts(chosenWord);
@@ -139,7 +148,12 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 send(communicationID, serStream, serStreamSize, 0); // send buffer to client
                 break;
             case VERIFY_LETTER:
-                puts(stream.content);
+                character= ((char *) stream.content);
+                editBoolMask(character, mask, chosenWord);
+                init_stream(&stream,SEND_MASK);
+                set_content_mask(&stream, mask,strlen(chosenWord));
+                serStreamSize = serialize_stream(&stream, serStream);
+                send(communicationID, mask, serStreamSize, 0); // send buffer to client
                 break;
             default:
                 break;
@@ -148,3 +162,4 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
     printf("%d | Client disconnected\n", communicationID);
     destroy_stream(&stream);
 }
+

@@ -3,8 +3,8 @@
 //
 
 #include <string.h>
+#include <stdbool.h>
 #include "stream.h"
-#include "hangman.h"
 
 /**
  * Create a stream, initialize it, and return it
@@ -56,11 +56,19 @@ void set_content(stream_t *s, void *content)
             s->content = malloc(sizeof(strlen(value)));
             memcpy(s->content, value, (int)sizeof(content));
             break;
+        case SEND_MASK:
+
+            s->content = malloc(sizeof(content) * sizeof(bool)); // allocate the memory for the array
+            memcpy(s->content, content, sizeof (content));        // copy content
+            break;
         default:
             s->content = NULL;
     }
 }
-
+void set_content_mask(stream_t *s, void *content,int length){
+    s->content = malloc(length); // allocate the memory for the array
+    memcpy(s->content, content, length);        // copy content
+}
 /**
  * Free the memory used by the content of a stream
  * @param s the stream
@@ -101,7 +109,10 @@ size_t serialize_stream(stream_t *s, void *buffer)
             case INT:
             memcpy(buffer, s->content, 1); // copy the int
             return sizeof(uint8_t) + sizeof(uint8_t);
-
+            // if content is a bool[]
+        case SEND_MASK:
+            memcpy(buffer, s->content, sizeof(s->content) ); // copy the array
+            return sizeof(uint8_t) + sizeof(s->content);
         default:
             return 0;
     }
@@ -115,9 +126,8 @@ size_t serialize_stream(stream_t *s, void *buffer)
 void unserialize_stream(void *buffer, stream_t *s)
 {
     init_stream(s, *((uint8_t *)buffer)); // re init the stream
-   // buffer += sizeof(uint8_t); // move in the buffer of the size of the type
+    buffer += sizeof(uint8_t); // move in the buffer of the size of the type
     size_t len;
-
     switch (s->type)
     {
         // if content is an int
@@ -133,6 +143,10 @@ void unserialize_stream(void *buffer, stream_t *s)
             s->content = malloc((len + 1) * sizeof(char)); // allocate the size of the string
             memcpy(s->content, buffer, len);               // copy content
             ((char *)s->content)[len] = '\0';              // set the last char as '\0' to end the string
+            break;
+        case SEND_MASK:
+            s->content = malloc(sizeof(s->content)); // allocate the size of the array
+            memcpy(buffer, s->content, sizeof(s->content) ); // copy the array
             break;
         default:
             break;

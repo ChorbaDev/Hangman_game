@@ -24,6 +24,7 @@ enum
     SEND_DASHBOARD,
     SEND_HANGMAN,
     ASK_FOR_WORD,
+    SEND_MASK,
     VERIFY_LETTER,
     SEND_LENGTH,
     ERROR,                         //? content : NULL

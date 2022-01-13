@@ -10,32 +10,74 @@
 #include <time.h>        // "Used the chronological time"
 #include <sys/socket.h>
 
-#include "../server/semaphore.h"
-#include "../server/server.h"
 #include "stream.h"
 #include "hangman.h"
 #include "playerInfo.c"
+#include "wordMask.c"
 #include "style.h"
-
+#define MAX_ERRORS 7
 void displayHangman(int length, int fdSocket) {
     stream_t stream;
     char serStream[STREAM_SIZE];
+    long bufSize;
     size_t serStreamSize;
-    puts("\nVotre mot est: ");
-    for (int i = 0; i < length; i++) {
-        printf("-");
+    char wordMask[length];
+    char* errors=(char*)malloc(MAX_ERRORS*sizeof(char));
+    bool* boolMask= malloc(length*sizeof(bool));
+    int loop=1;
+    initWordMask( wordMask, length);
+    initBoolMask(boolMask,length);
+    while(loop){
+        system("clear");
+        //
+        wrongGuess((int)strlen(errors));
+        printf(FONT_BLUE "\n*--------------------- PENDU ---------------------*" FONT_DEFAULT);
+        printf(FONT_YELLOW"\n           BIENVENUE DANS LA JEU DE PENDU!!!"FONT_DEFAULT);
+        printf("\nVotre mot est: ");
+        for (int i = 0; i < length; i++) {
+            printf(FONT_GREEN"%c",wordMask[i]);
+        }
+        printf(FONT_RED"\nErreurs : ");
+        for (int i = 0; i < MAX_ERRORS; i++) {
+            printf(FONT_RED" %c ", toupper(errors[i]));
+        }
+        //
+        printf(FONT_DEFAULT"\nDonner une lettre : ");
+        char *c;
+        int input = 0;
+        while (!input || input == 10)
+            input = getchar();
+        char inputChar = (char) input;
+        //
+        stream.content = NULL;
+        init_stream(&stream, VERIFY_LETTER);
+        set_content(&stream, &inputChar);
+        serStreamSize = serialize_stream(&stream, serStream);
+        send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+        bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
+        if (bufSize < 1)
+        {
+            loop = 0; // set the loop at false, this will make the client go back to the lobby
+            continue; // go to the next iteration of this while loop
+        }
+        unserialize_stream(serStream, &stream);
+        boolMask= ((bool *) serStream);
+        editWordMask(wordMask, boolMask, inputChar);
+        if(!strchr(wordMask,inputChar)){
+            strncat(errors, &inputChar,1);
+            if(strlen(errors)==MAX_ERRORS){
+                errors="";
+                loop=0;
+            }
+        }
+        if(!strchr(wordMask,'-')){
+            potenceGagnant();
+            printf(FONT_GREEN"\n           Bien jouée vous avez gagnée!\n               Le mot est: %s\n"FONT_DEFAULT,wordMask);
+            errors="";
+            loop=0;
+        }
     }
-    puts("\nDonner une lettre :");
-    char *c;
-    int input = 0;
-    while (!input || input == 10)
-        input = getchar();
-    char inputChar = (char) input;
-    stream.content = NULL;
-    init_stream(&stream, VERIFY_LETTER);
-    set_content(&stream, &inputChar);
-    serStreamSize = serialize_stream(&stream, serStream);
-    send(fdSocket, serStream, serStreamSize, 0); // send buffer to client
+
 }
 
 int openFile(const char *path) {
@@ -119,7 +161,7 @@ char *getDashedWord(char *word) {
 
     return dashedWord;
 }
-
+/*
 void runGame(char *word) {
     int gameRunning = 1, availableTries = 10, mistake = 0;
     char letterTyped = 0;
@@ -160,7 +202,7 @@ void runGame(char *word) {
 
     } while (gameRunning == 1);
 }
-
+*/
 /// need to check the validity with the bool change from server to client
 int checkAnswer(char letterTyped, char *word, char *dashedWord) {
     size_t wordLength = strlen(word);
@@ -193,113 +235,112 @@ gameConfigStruct initGame() {
 //#############################################
 
 void wrongGuess(int mistake) {
-    printf("Wrong guess!\n");
     switch (mistake) {
         case 0:
             //0 erreurs on doit juste print la potence
-            potence(Cont);
-            for(Cont = 0; Cont < 9; Cont++)
+            Potence();
+            for(int Cont = 0; Cont < 9; Cont++)
                 printf("\n    │ \n    │ ");
 
             printf("\n ───┴───\n");
             break;
         case 1:
             //1 erreur donc tete
-            Head(Cont);
-            for(Cont = 0; Cont < 6; Cont++)
+            Head();
+            for(int Cont = 0; Cont < 6; Cont++)
                 printf("\n    │ \n    │ ");
 
             printf("\n    │ \n ───┴───\n");
             break;
         case 2:
             //2 erreurs donc corps
-            Body(Cont);
+            Body();
             break;
         case 3:
             //3 erreurs donc bras droit
-            rArm(Cont);
+            rArm();
             break;
         case 4:
             //4 erreurs donc bras gauche
-            lArm(Cont)
-            for(Cont = 0; Cont < 4; Cont++)
+            lArm();
+            for(int Cont = 0; Cont < 4; Cont++)
                 printf("\n    │ \n    │");
 
             printf("\n ───┴───\n");
             break;
         case 5:
             //5 erreurs donc jambe droite
-            rLeg(Cont);
+            rLeg();
             break;
         case 6:
             //6 erreurs donc jambe gauche
-            lLeg(Cont);
+            lLeg();
             perdu();
             break;
         default:
             //perdu
-            lLeg(Cont);
+            lLeg();
     }
 }
 //##############################################################
-void potence(int Cont){
+void Potence(){
     printf("    ┌");
 
-    for(Cont = 0; Cont < 5; Cont++)
+    for(int Cont = 0; Cont < 5; Cont++)
         printf("──────");
 
     printf("┐ \n    │ \t\t\t\t   │ \n    │ \t\t\t\t   │");
 }
-void Head(int Cont){
-    Potence(Cont);
+void Head(){
+    Potence();
     printf("\n    │ \t\t\t       ┌───┴───┐");
     printf("\n    │ \t\t\t       │ ^   ^ │");
     printf("\n    │ \t\t\t       │   .   │");
     printf("\n    │ \t\t\t       │  ---  │");
     printf("\n    │ \t\t\t       └───┬───┘");
 }
-void Body(int Cont){
-    Head(Cont);
+void Body(){
+    Head();
 
-    for(Cont = 0; Cont < 2; Cont++)
+    for(int Cont = 0; Cont < 2; Cont++)
         printf("\n    │ \t\t\t\t   │ \n    │ \t\t\t\t   │");
 
     printf("\n    │ \t\t\t\t   │");
 
-    for(Cont = 0; Cont < 4; Cont++)
+    for(int Cont = 0; Cont < 4; Cont++)
         printf("\n    │ \n    │");
 
     printf("\n ───┴───\n");
 }
-void rArm(int Cont){
-    Head(Cont);
+void rArm(){
+    Head();
 
     printf("\n    │ \t\t\t\t   │");
     printf("\n    │ \t\t\t       ┌───┤");
-    for(Cont = 0; Cont < 2; Cont++)
+    for(int Cont = 0; Cont < 2; Cont++)
         printf("\n    │ \t\t\t       │   │");
 
     printf("\n    │ \t\t\t       ┼   │");
 
-    for(Cont = 0; Cont < 4; Cont++)
+    for(int Cont = 0; Cont < 4; Cont++)
         printf("\n    │ \n    │");
 
     printf("\n ───┴───\n");
 }
-void lArm(int Cont){
-    Head(Cont);
+void lArm(){
+    Head();
 
     printf("\n    │ \t\t\t\t   │");
     printf("\n    │ \t\t\t       ┌───┼───┐");
 
-    for(Cont = 0; Cont < 2; Cont++)
+    for(int Cont = 0; Cont < 2; Cont++)
         printf("\n    │ \t\t\t       │   │   │");
 
     printf("\n    │ \t\t\t       ┼   │   ┼");
 }
 
-void rLeg(int Cont){
-    lArm(Cont);
+void rLeg(){
+    lArm();
 
     printf("\n    │ \t\t\t          / \n    │ \t\t\t         /");
     printf("\n    │ \t\t\t        / \n    │ \t\t\t       /");
@@ -307,8 +348,8 @@ void rLeg(int Cont){
     printf("\n    │ \n    │ \n ───┴───\n");
 }
 
-void lLeg(int Cont){
-    Potence(Cont);
+void lLeg(){
+    Potence();
 
     printf("\n    │ \t\t\t       ┌───┴───┐");
     printf("\n    │ \t\t\t       │ x   x │");
@@ -318,7 +359,7 @@ void lLeg(int Cont){
     printf("\n    │ \t\t\t\t└──┼──┘");
     printf("\n    │ \t\t\t       ┌───┼───┐");
 
-    for(Cont = 0; Cont < 2; Cont++)
+    for(int Cont = 0; Cont < 2; Cont++)
         printf("\n    │ \t\t\t       │   │   │");
 
     printf("\n    │ \t\t\t       ┼   │   ┼");
@@ -334,8 +375,8 @@ void perdu(){
 void gagne(){
     // affichage du message de victoire
 }
-void potenceGagnant(int Cont){
-    potence(Cont);
+void potenceGagnant(){
+    Potence();
     printf("\n    │ \t\t\t\t  /┴\\ \n    │ \t\t\t\t /   \\ \n    │ \t\t\t\t/     \\");
     printf("\n    │ \t\t\t       └───────┘");
     printf("\n    │ \t\t┌───────┐");
