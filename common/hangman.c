@@ -22,17 +22,19 @@ void displayHangman(int length, int fdSocket) {
     long bufSize;
     size_t serStreamSize;
     char wordMask[length];
-    char* errors=(char*)malloc(MAX_ERRORS*sizeof(char));
+    char errors[MAX_ERRORS]={};
     bool* boolMask= malloc(length*sizeof(bool));
     int loop=1;
+
     initWordMask( wordMask, length);
     initBoolMask(boolMask,length);
     while(loop){
         system("clear");
         //
-        wrongGuess((int)strlen(errors));
         printf(FONT_BLUE "\n*--------------------- PENDU ---------------------*" FONT_DEFAULT);
-        printf(FONT_YELLOW"\n           BIENVENUE DANS LA JEU DE PENDU!!!"FONT_DEFAULT);
+        printf(FONT_YELLOW"\n           BIENVENUE DANS LA JEU DE PENDU!!!\n"FONT_DEFAULT);
+
+        wrongGuess((int)strlen(errors));
         printf("\nVotre mot est: ");
         for (int i = 0; i < length; i++) {
             printf(FONT_GREEN"%c",wordMask[i]);
@@ -66,15 +68,14 @@ void displayHangman(int length, int fdSocket) {
         if(!strchr(wordMask,inputChar)){
             strncat(errors, &inputChar,1);
             if(strlen(errors)==MAX_ERRORS){
-                free(errors);
                 loop=0;
             }
         }
         if(!strchr(wordMask,'-')){
+            loop=0;
             potenceGagnant();
             printf(FONT_GREEN"\n           Bien jouée vous avez gagnée!\n               Le mot est: %s\n"FONT_DEFAULT,wordMask);
-            free(errors);
-            loop=0;
+
         }
     }
 
@@ -223,7 +224,7 @@ void wrongGuess(int mistake) {
 }
 //##############################################################
 void Potence(){
-    printf("    ┌");
+    printf("\n    ┌");
 
     for(int Cont = 0; Cont < 5; Cont++)
         printf("──────");
