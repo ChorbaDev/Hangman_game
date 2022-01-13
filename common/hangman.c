@@ -198,6 +198,10 @@ void wrongGuess(int mistake) {
         case 0:
             //0 erreurs on doit juste print la potence
             potence(Cont);
+            for(Cont = 0; Cont < 9; Cont++)
+                printf("\n    │ \n    │ ");
+
+            printf("\n ───┴───\n");
             break;
         case 1:
             //1 erreur donc tete
