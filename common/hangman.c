@@ -16,6 +16,9 @@
 #include "wordMask.c"
 #include "style.h"
 #define MAX_ERRORS 7
+
+bool existIn(char i, char errors[7]);
+
 void displayHangman(int length, int fdSocket) {
     stream_t stream;
     char serStream[STREAM_SIZE];
@@ -47,7 +50,7 @@ void displayHangman(int length, int fdSocket) {
         printf(FONT_DEFAULT"\nDonner une lettre : ");
         char *c;
         int input = 0;
-        while (!input || input == 10)
+        while (!input || input == 10 || existIn((char)input,errors))
             input = getchar();
         char inputChar = (char) input;
         //
@@ -74,11 +77,19 @@ void displayHangman(int length, int fdSocket) {
         if(!strchr(wordMask,'-')){
             loop=0;
             potenceGagnant();
-            printf(FONT_GREEN"\n           Bien jouée vous avez gagnée!\n               Le mot est: %s\n"FONT_DEFAULT,wordMask);
+            printf(FONT_GREEN"\n           Bien jouée vous avez gagnée!\n"
+                             "               Le mot est: "FONT_DEFAULT);
+            for (int i = 0; i < length; i++) {
+                printf(FONT_GREEN"%c",wordMask[i]);
+            }
 
         }
     }
 
+}
+
+bool existIn(char car, char errors[]) {
+ return  strchr(errors,car);
 }
 
 int openFile(const char *path) {
