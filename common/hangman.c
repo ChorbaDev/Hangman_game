@@ -223,6 +223,7 @@ void wrongGuess(int mistake) {
     }
 }
 //##############################################################
+//dessine la potence
 void Potence(){
     printf("\n    ┌");
 
@@ -231,6 +232,7 @@ void Potence(){
 
     printf("┐ \n    │ \t\t\t\t   │ \n    │ \t\t\t\t   │");
 }
+//dessine la tête
 void Head(){
     Potence();
     printf("\n    │ \t\t\t       ┌───┴───┐");
@@ -239,6 +241,7 @@ void Head(){
     printf("\n    │ \t\t\t       │  ---  │");
     printf("\n    │ \t\t\t       └───┬───┘");
 }
+// dessine le corps
 void Body(){
     Head();
 
@@ -252,6 +255,7 @@ void Body(){
 
     printf("\n ───┴───\n");
 }
+// dessine le bras droit
 void rArm(){
     Head();
 
@@ -267,6 +271,7 @@ void rArm(){
 
     printf("\n ───┴───\n");
 }
+// dessine le bras gauche
 void lArm(){
     Head();
 
@@ -278,7 +283,7 @@ void lArm(){
 
     printf("\n    │ \t\t\t       ┼   │   ┼");
 }
-
+//dessine la jambe droite
 void rLeg(){
     lArm();
 
@@ -287,7 +292,7 @@ void rLeg(){
     printf("\n    │  \t\t\t      / \n    │ ");
     printf("\n    │ \n    │ \n ───┴───\n");
 }
-
+// dessine la jambe gauche
 void lLeg(){
     Potence();
 
@@ -315,6 +320,7 @@ void perdu(){
 void gagne(){
     // affichage du message de victoire
 }
+// dessine le pendu en position gagnante
 void potenceGagnant(){
     Potence();
     printf("\n    │ \t\t\t\t  /┴\\ \n    │ \t\t\t\t /   \\ \n    │ \t\t\t\t/     \\");
