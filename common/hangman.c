@@ -206,6 +206,10 @@ void wrongGuess(int mistake) {
         case 1:
             //1 erreur donc tete
             Head(Cont);
+            for(Cont = 0; Cont < 6; Cont++)
+                printf("\n    │ \n    │ ");
+
+            printf("\n    │ \n ───┴───\n");
             break;
         case 2:
             //2 erreurs donc corps
@@ -218,6 +222,10 @@ void wrongGuess(int mistake) {
         case 4:
             //4 erreurs donc bras gauche
             lArm(Cont)
+            for(Cont = 0; Cont < 4; Cont++)
+                printf("\n    │ \n    │");
+
+            printf("\n ───┴───\n");
             break;
         case 5:
             //5 erreurs donc jambe droite
