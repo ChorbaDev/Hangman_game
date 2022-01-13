@@ -12,23 +12,12 @@
  */
 int promptChar(char *buffer)
 {
-  /*  buffer= getchar();
-    if (c)
-    {
-        puts("1");
-        char *lastCharPos = strchr(buffer, '\n');
-        if (lastCharPos != NULL)
-            *lastCharPos = '\0';
-        else
-            clearBuffer();
-        return EXIT_SUCCESS;
-    }
-    else
-    {
-        puts("@");
-        clearBuffer();
-        return EXIT_FAILURE;
-    }*/
+    int input = 0;
+    while (!input || input == 10)
+        input = getchar();
+    char inputChar = (char) input;
+    buffer= &inputChar;
+    return input;
 }
 /**
  * Allow to enter text, and if the text entered is too long, then it will clear the buffer

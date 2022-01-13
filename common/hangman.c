@@ -66,14 +66,14 @@ void displayHangman(int length, int fdSocket) {
         if(!strchr(wordMask,inputChar)){
             strncat(errors, &inputChar,1);
             if(strlen(errors)==MAX_ERRORS){
-                errors="";
+                free(errors);
                 loop=0;
             }
         }
         if(!strchr(wordMask,'-')){
             potenceGagnant();
             printf(FONT_GREEN"\n           Bien jouée vous avez gagnée!\n               Le mot est: %s\n"FONT_DEFAULT,wordMask);
-            errors="";
+            free(errors);
             loop=0;
         }
     }

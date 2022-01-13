@@ -145,7 +145,7 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 puts(chosenWord);
                 set_content(&stream, chosenWord);
                 serStreamSize = serialize_stream(&stream, serStream);
-                send(communicationID, serStream, serStreamSize, 0); // send buffer to client
+                send(communicationID, stream.content, serStreamSize, 0); // send buffer to client
                 break;
             case VERIFY_LETTER:
                 character= ((char *) stream.content);

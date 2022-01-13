@@ -112,8 +112,7 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
             loop = 0; // set the loop at false, this will make the client go back to the lobby
             continue; // go to the next iteration of this while loop
         }
-        unserialize_stream(serStream, stream);
-        char* word= ((char *) stream->content);
+        char* word= ((char *) serStream);
         puts(word);
         word_length= atoi(&word[strlen(word)-1]);
         displayHangman(word_length,fdSocket);
