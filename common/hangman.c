@@ -161,67 +161,6 @@ char *getDashedWord(char *word) {
 
     return dashedWord;
 }
-/*
-void runGame(char *word) {
-    int gameRunning = 1, availableTries = 10, mistake = 0;
-    char letterTyped = 0;
-
-    char *dashedWord = getDashedWord(word);
-
-    do {
-        // Ask for a letter
-        printf("Type a letter: ");
-        scanf("%c", &letterTyped);
-
-        // Check the answer by looping though the word
-        int replacedLetters = checkAnswer(letterTyped, word, dashedWord);
-
-        // Check this try's results
-        if (replacedLetters == 0) {
-            // No letter has been replaced: wrong answer
-            mistake++;
-            wrongGuess(mistake);
-            availableTries--;
-
-        } else {
-            // Good guess, display the dashed word updated
-            printf("Good guess!\n%s\n", dashedWord);
-        }
-
-        // Check the game state
-        if (strcmp(dashedWord, word) == 0) {
-            gagne();
-            gameRunning = 0;
-            printf("You win!");
-        }
-
-        if (availableTries == 0) {
-            gameRunning = 0;
-            printf("No more tries, you lose! The word was %s\n", word);
-        }
-
-    } while (gameRunning == 1);
-}
-*/
-/// need to check the validity with the bool change from server to client
-int checkAnswer(char letterTyped, char *word, char *dashedWord) {
-    size_t wordLength = strlen(word);
-    int replacedLetters = 0;
-
-    // Check the answer by looping though the word
-    for (int i = 0; i < wordLength; i++) {
-        if (word[i] == letterTyped) {
-            // The letter exists: does it need to be replaced?
-            if (dashedWord[i] == '_') {
-                // Replace the letter
-                dashedWord[i] = letterTyped;
-                replacedLetters++;
-            }
-        }
-    }
-
-    return replacedLetters;
-}
 
 gameConfigStruct initGame() {
     gameConfigStruct gameConfig = *(gameConfigStruct *) malloc(
