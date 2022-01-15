@@ -2,7 +2,7 @@
 #include "playerInfo.h"
 #include "help.c"
 /**
- * Initialize a seatStruct instance
+ * Initialize a infoStruct instance
  * @return the seat
  */
 infoStruct initInfo()

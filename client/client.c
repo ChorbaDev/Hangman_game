@@ -1,6 +1,3 @@
-//
-// Created by omar on 08/01/2022.
-//
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
@@ -31,15 +28,15 @@ int main(){
 
     struct sockaddr_in serverCoords;
     memset(&serverCoords, 0x00, sizeof(struct sockaddr_in)); // allocate memory
-    serverCoords.sin_family = PF_INET;                       // Set protocal family
+    serverCoords.sin_family = PF_INET;                               // Set protocal family
     inet_aton(ADDRESS, &serverCoords.sin_addr);              // put server address to our struct
-    serverCoords.sin_port = htons(PORT);                     // set address port
+    serverCoords.sin_port = htons(PORT);                    // set address port
 
     if (connect(fdSocket, (struct sockaddr *)&serverCoords, sizeof(serverCoords)) == -1)
     {
-        printf(FONT_RED "Connection failed\n" FONT_DEFAULT);
         exit(EXIT_FAILURE);
     }
+
     printf(FONT_GREEN "\n \nConnected to %s:%d\n \n" FONT_DEFAULT, ADDRESS, PORT);
     // call the function that manage the connection
     connectedToServer(fdSocket);
@@ -125,7 +122,6 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
 }
 int compareFn (const void * a, const void * b) {
     int c=((infoStruct *)a)->wins,d=((infoStruct *)b)->wins;
-    printf("\n%d\n",c - d);
     return ( d - c );
 }
 /**

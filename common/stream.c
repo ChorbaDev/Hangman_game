@@ -33,7 +33,7 @@ void init_stream(stream_t *s, uint8_t type)
 }
 
 /**
- * Se the content of a stream
+ * Set the content of a stream
  * @param s the stream
  * @param content the new content
  */
@@ -56,7 +56,6 @@ void set_content(stream_t *s, void *content)
             memcpy(s->content, value, (int)sizeof(content));
             break;
         case SEND_ID:
-        case INT:
             s->content = malloc(sizeof(int8_t));
             memcpy(s->content, content, 1);
             break;
@@ -72,6 +71,12 @@ void set_content(stream_t *s, void *content)
             s->content = NULL;
     }
 }
+/**
+ * same as set_content but we need a length to set content for mask
+ * @param s
+ * @param content
+ * @param length
+ */
 void set_content_mask(stream_t *s, void *content,int length){
     s->content = malloc(length*sizeof(bool)); // allocate the memory for the array
     memcpy(s->content, content, length);        // copy content
@@ -87,7 +92,7 @@ void destroy_stream(stream_t *s)
 }
 
 /**
- * Serialize a stream into a buffer
+ * Serialize a stream into a buffer (to avoid losing infos because we're using UDP)
  * @param s the stream
  * @param buffer the buffer to fill in
  * @return the size of the buffer
@@ -101,23 +106,13 @@ size_t serialize_stream(stream_t *s, void *buffer)
     {
         // if content is NULL
         case END_CONNECTION:
-        case ERROR:
         case ASK_FOR_LENGTH:
         case ASK_FOR_DASHBOARD:
         case ASK_FOR_NBCLIENTS:
         case ASK_FOR_ID:
             return sizeof(uint8_t);
-        case SUCCESS:
-            buffer += sizeof(uint8_t);
-            len = strlen((char *)s->content);
-            *((uint64_t *)buffer) = len;
-            buffer += sizeof(uint64_t);
-            memcpy(buffer,s->content , len);               // copy content
-            return sizeof(uint8_t) + sizeof(uint64_t) + len;
-            // if content is an int
         case VERIFY_LETTER:
         case SEND_LENGTH:
-        case INT:
             memcpy(buffer, s->content, 1); // copy the int
             return sizeof(uint8_t) + sizeof(uint8_t);
         case SEND_ID:
@@ -149,20 +144,12 @@ void unserialize_stream(void *buffer, stream_t *s)
         // if content is an int
         case VERIFY_LETTER:
         case SEND_LENGTH:
-        case INT:
-            s->content = malloc(sizeof(buffer)); // allocate the size of an int
-            memcpy(s->content, buffer, (int)sizeof(buffer));       // copy the int
-            break;
-        case SUCCESS:
-            len =  strlen((char *)buffer);                // get the length of the string
-           // buffer += sizeof(uint64_t);                    // move is the buffer
-            s->content = malloc((len + 1) * sizeof(char)); // allocate the size of the string
-            memcpy(s->content, buffer, len);               // copy content
-            ((char *)s->content)[len] = '\0';              // set the last char as '\0' to end the string
+            s->content = malloc(sizeof(buffer));
+            memcpy(s->content, buffer, (int)sizeof(buffer));
             break;
         case SEND_DASHBOARD:
-            s->content = malloc(sizeof(infoStruct)*PLAYERS_AMOUNT); // allocate the size of an int
-            memcpy(s->content, buffer,sizeof(infoStruct)*PLAYERS_AMOUNT );       // copy the int
+            s->content = malloc(sizeof(infoStruct)*PLAYERS_AMOUNT);
+            memcpy(s->content, buffer,sizeof(infoStruct)*PLAYERS_AMOUNT );
             break;
         case SEND_MASK:
             s->content = malloc(sizeof(s->content)); // allocate the size of the array

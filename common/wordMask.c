@@ -1,7 +1,3 @@
-//
-// Created by omar on 12/01/2022.
-//
-
 #include "wordMask.h"
 void initBoolMask(bool *pInt, int l) {
     for (int i=0; i < l; i++)

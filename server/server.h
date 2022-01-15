@@ -1,7 +1,3 @@
-//
-// Created by omar on 08/01/2022.
-//
-
 #ifndef PRJ_HANGMANC_SERVER_H
 #define PRJ_HANGMANC_SERVER_H
 #include <netinet/in.h>
@@ -18,7 +14,6 @@ typedef struct
 
 void *connectionThread(void *);
 void clientConnected(int, gameConfigStruct *);
-void disconnectUser(int, stream_t *, char *);
-int sendString(int, stream_t *, char *, char *, bool, const char *, ...);
-void promptUser(int, stream_t *, char *, int);
+int existAt(int id, infoStruct players[PLAYERS_AMOUNT]);
+
 #endif //PRJ_HANGMANC_SERVER_H

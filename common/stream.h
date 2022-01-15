@@ -1,7 +1,3 @@
-//
-// Created by omar on 08/01/2022.
-//
-
 #ifndef PRJ_HANGMANC_STREAM_H
 #define PRJ_HANGMANC_STREAM_H
 
@@ -18,9 +14,9 @@ typedef struct
     uint8_t type;
 } stream_t;
 
+// all the tasks needed
 enum
 {
-    INT,                           //? content : int
     SEND_DASHBOARD,
     ASK_FOR_DASHBOARD,
     SEND_HANGMAN,
@@ -31,9 +27,7 @@ enum
     SEND_MASK,
     VERIFY_LETTER,
     SEND_LENGTH,
-    ERROR,                         //? content : NULL
-    SUCCESS,                       //? content : NULL
-    END_CONNECTION,                //? content : NULL
+    END_CONNECTION,
 };
 
 stream_t create_stream();

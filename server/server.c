@@ -7,33 +7,28 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <stddef.h>
-#include <stdarg.h>
 #include <time.h>
 #include <pthread.h>
 #include <stdbool.h>
 
 #include "server.h"
-#include "semaphore.h"
 #include "../common/style.h"
 #include "../common/hangman.c"
 #include "../common/stream.c"
 
-sem_t semaphore;
 
-
+struct sockaddr_in serverAddr;
+gameConfigStruct gameConfig ;
+int nbClient=0;
 /**
  * Main function that create the socket, create the game, and manage client connections
  * @return exit status (EXIT_FAILURE || EXIT_SUCCESS)
  */
-struct sockaddr_in serverAddr;
-
-int existAt(int id, infoStruct players[10]);
-
-gameConfigStruct gameConfig ;
-int nbClient=0;
 int main(int argc, char *argv[]){
     bool loop = 1;
     system("clear");
+    //? set the randomness of the program
+    srand((unsigned int)time(NULL));
     //
     int serverSocket = socket(PF_INET, SOCK_STREAM, 0);
     if (serverSocket < 0)
@@ -59,38 +54,38 @@ int main(int argc, char *argv[]){
     }
     //? init the hangman structure that will contain every player
     gameConfig = initGame();
-    sem_init(&semaphore, PTHREAD_PROCESS_SHARED, 1);
-
-    //? set the randomness of the program
-    srand((unsigned int)time(NULL));
 
     // Main loop
-    printf("Waiting...\n");
+    printf("En attendant...\n");
     int sockaddr_in_size = sizeof(struct sockaddr_in);
     while (loop)
     {
         connectionStruct myConnectionStruct;
         myConnectionStruct.gameConfig = &gameConfig; // set the address of the gameConfig variable
+        bool availableLobbys=nbClient<PLAYERS_AMOUNT;
+        // waiting for a connection to come
+            if ((myConnectionStruct.communicationID = accept(serverSocket, (struct sockaddr *)&myConnectionStruct.connectedAddr,
+                                                             &sockaddr_in_size)) != -1)
+            {
+                if(!availableLobbys){
+                    close(myConnectionStruct.communicationID );
+                    continue;
+                }
 
-        //? waiting for a connection to come
-        if ((myConnectionStruct.communicationID = accept(serverSocket, (struct sockaddr *)&myConnectionStruct.connectedAddr,
-                                                         &sockaddr_in_size)) != -1)
-        {
-            //? create the thread that will manage the connection
-            pthread_t thread;
-            nbClient++;
-            int threadReturn = pthread_create(&thread, NULL, connectionThread, (void *)&myConnectionStruct);
-        }
-        else
-        {
-            printf(FONT_RED "Connection acceptation error\n" FONT_DEFAULT);
-        }
+                // create the thread that will manage the connection
+                pthread_t thread;
+                nbClient++;
+                int threadReturn = pthread_create(&thread, NULL, connectionThread, (void *)&myConnectionStruct);
+            }
+            else
+            {
+                printf(FONT_RED "Connection acceptation error\n" FONT_DEFAULT);
+            }
+
+
     }
-    // Destruction de sémaphore
-    sem_destroy(&semaphore);
-    // Fermeture du serveur
+    // closing the serveur
     close(serverSocket);
-
 
     return EXIT_SUCCESS;
 }
@@ -120,7 +115,6 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
     stream_t stream = create_stream(); // stream that is used with this client
     char serStream[STREAM_SIZE];       // serialized stream
     size_t serStreamSize;              // buffer that contain the serialized stream
-    char code[CODE_LENGTH + 1];      // string for the code
     char word[10];
     int wordsTotal = 0, wordsFileDescriptor;
     char ** wordsList;
@@ -134,7 +128,6 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
         int bufSize = recv(communicationID, serStream, STREAM_SIZE, 0);
         if (bufSize < 1)
         {
-            puts("no bufsize");
             loop = 0;
             continue;
         }
@@ -148,12 +141,17 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 break;
             case ASK_FOR_LENGTH:
                 init_stream(&stream,SEND_LENGTH);
+
+                //choose randomly a word from the list
                 wordsFileDescriptor = openFile("hangmanwords.txt");
                 wordsList = readFile(wordsFileDescriptor, &wordsTotal);
                 int random = randomNumber(0, wordsTotal);
                 while(strlen(chosenWord=wordsList[random])<3);
-                initBoolMask((bool *) mask, strlen(chosenWord));
                 close(wordsFileDescriptor);
+
+                //initialize the boolean mask
+                initBoolMask((bool *) mask, strlen(chosenWord));
+
                 printf(FONT_YELLOW"Mot choisi pour client n°%d: "FONT_DEFAULT,communicationID);
                 puts(chosenWord);
                 set_content(&stream, chosenWord);
@@ -161,12 +159,15 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 send(communicationID, stream.content, serStreamSize, 0); // send buffer to client
                 break;
             case VERIFY_LETTER:
-                character= ((char *) stream.content);
+                character= ((char *) stream.content);       //the character sent by the client
                 editBoolMask(character, mask, chosenWord);
+
+                // if last character sent is true so we increment the number of wins for the client
                 if(winningGame(mask, strlen(chosenWord))){
                     int index=existAt(communicationID,gameConfig->players);
                     gameConfig->players[index].wins++;
                 }
+                //sending the bool mask
                 init_stream(&stream,SEND_MASK);
                 set_content_mask(&stream, mask,strlen(chosenWord));
                 serStreamSize = serialize_stream(&stream, serStream);
@@ -177,12 +178,14 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 send(communicationID, word, sizeof(word) , 0);
                 break;
             case ASK_FOR_DASHBOARD:
+                // send all players info
                 init_stream(&stream,SEND_DASHBOARD);
                 set_content(&stream,gameConfig->players);
                 serStreamSize = serialize_stream(&stream, serStream);
                 send(communicationID, serStream, serStreamSize , 0);
                 break;
             case ASK_FOR_ID:
+                // the communication ID for the current client (to color the score in green in the dashboard)
                 init_stream(&stream,SEND_ID);
                 sprintf(word, "%d", communicationID);
                 set_content(&stream, word);

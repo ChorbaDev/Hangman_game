@@ -1,4 +1,3 @@
-
 #include <stdio.h>       // "Standard Header (In/Out)"
 #include <stdlib.h>      // "Standard Header"
 #include "drawHangman.h"

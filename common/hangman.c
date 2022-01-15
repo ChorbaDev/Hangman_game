@@ -1,6 +1,3 @@
-//
-// Created by omar on 08/01/2022.
-//
 #include <unistd.h>
 #include <fcntl.h>
 #include <ctype.h>       // "Fuctions added to work with characters"
@@ -18,8 +15,6 @@
 #include "style.h"
 #define MAX_ERRORS 6
 
-bool checkLetter(char i);
-
 void displayHangman(int length, int fdSocket) {
     stream_t stream;
     char serStream[STREAM_SIZE];
@@ -34,11 +29,14 @@ void displayHangman(int length, int fdSocket) {
     initBoolMask(boolMask,length);
     while(loop){
         system("clear");
-        //
+
         printf(FONT_BLUE "\n*--------------------- PENDU ---------------------*" FONT_DEFAULT);
         printf(FONT_YELLOW"\n           BIENVENUE DANS LA JEU DE PENDU!!!\n"FONT_DEFAULT);
 
+        //display the errors that client made
         wrongGuess((int)strlen(errors));
+
+        //if number of errors made equals max number of errors the client lose the game
         if(strlen(errors)==MAX_ERRORS){
             printf(FONT_RED"\n           Vous avez perdu :( !"FONT_DEFAULT);
             break;
@@ -51,9 +49,11 @@ void displayHangman(int length, int fdSocket) {
         for (int i = 0; i < MAX_ERRORS; i++) {
             printf(FONT_RED" %c ", toupper(errors[i]));
         }
+
+        //display number of errors permitted left
         printf(FONT_YELLOW"\nIl vous reste %lu essais ",MAX_ERRORS- strlen(errors));
-        //
-        char *c;
+
+        //ask for a char
         int input = 0;
         printf(FONT_DEFAULT"\nDonner une lettre alphabitique : ");
         while (!input || input == 10 || existIn((char)input,errors) || !isalpha((char)input)){
@@ -61,12 +61,15 @@ void displayHangman(int length, int fdSocket) {
         }
 
         char inputChar = (char) input;
-        //
+
+        //send the letter to the server to verify it
         stream.content = NULL;
         init_stream(&stream, VERIFY_LETTER);
         set_content(&stream, &inputChar);
         serStreamSize = serialize_stream(&stream, serStream);
         send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+
+        //receive the response as a bool array
         bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
         if (bufSize < 1)
         {
@@ -75,10 +78,16 @@ void displayHangman(int length, int fdSocket) {
         }
         unserialize_stream(serStream, &stream);
         boolMask= ((bool *) serStream);
+
+        //edit the word mask (looks like this: -----) if the response is true
         editWordMask(wordMask, boolMask, inputChar);
+
+        //add the letter to the errors array if the response is false
         if(!strchr(wordMask,inputChar)){
             strncat(errors, &inputChar,1);
         }
+
+        //if word mask has no - left that means that the player won
         if(!strchr(wordMask,'-')){
             loop=0;
             potenceGagnant();
@@ -93,76 +102,6 @@ void displayHangman(int length, int fdSocket) {
 
 }
 
-bool existIn(char car, char errors[]) {
- return  strchr(errors,car);
-}
-
-int openFile(const char *path) {
-    int fileDescriptor = open(path, O_RDONLY);
-
-    if (fileDescriptor == -1) {
-        printf("Error while opening file\n");
-        exit(-1);
-    }
-
-    return fileDescriptor;
-}
-
-char **readFile(int fileDescriptor, int *wordsTotal) {
-    // Internal variables
-    char temp = 0;
-    int cursor = 0;
-    ssize_t bytesRead;
-
-    // Setting up pointers
-    char **wordsList = malloc(20 * sizeof(char *));
-    *wordsTotal = 0;
-
-    // Reading inside file
-    do {
-        bytesRead = read(fileDescriptor, &temp, sizeof(char));
-
-        if (bytesRead == -1) {
-            // Error while reading file
-            printf("Error while reading file\n");
-            exit(-1);
-        } else if (bytesRead >= sizeof(char)) {
-            if (cursor == 0) {
-                // Allocate some memory to catch the word
-                wordsList[*wordsTotal] = (char *) malloc(sizeof(char) * 30);
-            }
-
-            if (temp == '\n') {
-                // Finish the current word and update the word count
-                wordsList[*wordsTotal][cursor] = '\0';
-
-                // Reallocate unused memory
-                wordsList[*wordsTotal] = (char *) realloc(wordsList[*wordsTotal], (cursor + 1) * sizeof(char));
-
-                // Update the word count
-                (*wordsTotal)++;
-
-                // Reset the cursor
-                cursor = 0;
-            } else {
-                // Write the letter and update the cursor
-                wordsList[*wordsTotal][cursor++] = temp;
-            }
-        }
-    } while (bytesRead >= sizeof(char));
-
-    // Update the word count
-    if (*wordsTotal > 0)
-        (*wordsTotal)++;
-
-    return wordsList;
-}
-
-int randomNumber(int from, int to) {
-    return rand() % (to - from) + from;
-}
-
-
 gameConfigStruct initGame() {
     gameConfigStruct gameConfig = *(gameConfigStruct *) malloc(
             sizeof(gameConfigStruct)); // allocate the size of a gameConfigStruct
@@ -171,6 +110,5 @@ gameConfigStruct initGame() {
     }                                                // init every player of the array
     return gameConfig;
 }
-//#############################################
 
 

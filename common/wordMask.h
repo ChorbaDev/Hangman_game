@@ -1,7 +1,3 @@
-//
-// Created by omar on 12/01/2022.
-//
-
 #ifndef PRJ_HANGMANC_WORDMASK_H
 #define PRJ_HANGMANC_WORDMASK_H
 #include <stdbool.h>
