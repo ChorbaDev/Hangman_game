@@ -19,7 +19,7 @@
 #include "../common/stream.c"
 
 sem_t semaphore;
-bool loop = 1;
+
 
 /**
  * Main function that create the socket, create the game, and manage client connections
@@ -32,6 +32,7 @@ int existAt(int id, infoStruct players[10]);
 gameConfigStruct gameConfig ;
 int nbClient=0;
 int main(int argc, char *argv[]){
+    bool loop = 1;
     system("clear");
     //
     int serverSocket = socket(PF_INET, SOCK_STREAM, 0);
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]){
     //? set the randomness of the program
     srand((unsigned int)time(NULL));
 
-// Main loop
+    // Main loop
     printf("Waiting...\n");
     int sockaddr_in_size = sizeof(struct sockaddr_in);
     while (loop)
@@ -106,7 +107,7 @@ void *connectionThread(void *args)
     // function that will manage the client
     clientConnected(connection.communicationID, connection.gameConfig);
 
-    //close(connection.communicationID);
+    close(connection.communicationID);
     // Fin du thread actuel
     pthread_exit(NULL);
 }
@@ -126,12 +127,14 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
     char* character;
     char* chosenWord;
     bool* mask=malloc(1 * sizeof(bool));
+    bool loop = 1;
     while (loop)
     {
         // wait to receive a message from the client
         int bufSize = recv(communicationID, serStream, STREAM_SIZE, 0);
         if (bufSize < 1)
         {
+            puts("no bufsize");
             loop = 0;
             continue;
         }

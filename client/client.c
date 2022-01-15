@@ -61,6 +61,7 @@ void connectedToServer(int fdSocket)
     int8_t promptedInt;          // integer that is used when an integer is prompted to the client
     bool loop = 1;               // loop that let the client do something until he leave
     int bufSize;
+
     do
     {
         printf(FONT_BLUE "\n*--------------------- BIENVENUE ---------------------*" FONT_DEFAULT "\n" FONT_RED "0/" FONT_DEFAULT
@@ -109,22 +110,18 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
 {
     size_t serStreamSize; // variable that will contain the size of setStream
     int bufSize;          // contain the return of recv()
-    bool loop = 1;
-    do{
+
         init_stream(stream, ASK_FOR_LENGTH); // ask the server for a word
         serStreamSize = serialize_stream(stream, serStream);
         send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
         bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
         if (bufSize < 1)
         {
-            loop = 0; // set the loop at false, this will make the client go back to the lobby
-            continue; // go to the next iteration of this while loop
+            exit(EXIT_FAILURE);
         }
         char* word= ((char *) serStream);
         word_length= atoi(&word[strlen(word)-1]);
         displayHangman(word_length,fdSocket);
-        break;
-    }while(loop);
 }
 int compareFn (const void * a, const void * b) {
     int c=((infoStruct *)a)->wins,d=((infoStruct *)b)->wins;
