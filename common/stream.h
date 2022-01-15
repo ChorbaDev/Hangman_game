@@ -28,6 +28,7 @@ enum
     VERIFY_LETTER,
     SEND_LENGTH,
     END_CONNECTION,
+    GAME_LOST
 };
 
 stream_t create_stream();

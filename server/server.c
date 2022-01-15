@@ -152,7 +152,7 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 //initialize the boolean mask
                 initBoolMask((bool *) mask, strlen(chosenWord));
 
-                printf(FONT_YELLOW"Mot choisi pour client n°%d: "FONT_DEFAULT,communicationID);
+                printf(FONT_YELLOW"\nMot choisi pour client n°%d: "FONT_DEFAULT,communicationID);
                 puts(chosenWord);
                 set_content(&stream, chosenWord);
                 serStreamSize = serialize_stream(&stream, serStream);
@@ -164,6 +164,7 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
 
                 // if last character sent is true so we increment the number of wins for the client
                 if(winningGame(mask, strlen(chosenWord))){
+                    printf(FONT_GREEN"\nBingo!"FONT_DEFAULT" le joueur "FONT_GREEN"%d"FONT_DEFAULT" a trouvé le mot ("FONT_YELLOW"%s"FONT_DEFAULT")\n",communicationID,chosenWord);
                     int index=existAt(communicationID,gameConfig->players);
                     gameConfig->players[index].wins++;
                 }
@@ -191,6 +192,9 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 set_content(&stream, word);
                 serStreamSize = serialize_stream(&stream, serStream);
                 send(communicationID, serStream, serStreamSize , 0);
+                break;
+            case GAME_LOST:
+                printf(FONT_RED"\nDommage :("FONT_DEFAULT" le joueur "FONT_GREEN"%d"FONT_DEFAULT" n'a pas trouvé le mot ("FONT_YELLOW"%s"FONT_DEFAULT")\n",communicationID,chosenWord);
                 break;
             default:
                 break;

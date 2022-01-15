@@ -106,6 +106,7 @@ size_t serialize_stream(stream_t *s, void *buffer)
     {
         // if content is NULL
         case END_CONNECTION:
+        case GAME_LOST:
         case ASK_FOR_LENGTH:
         case ASK_FOR_DASHBOARD:
         case ASK_FOR_NBCLIENTS:
@@ -138,10 +139,8 @@ void unserialize_stream(void *buffer, stream_t *s)
 {
     init_stream(s, *((uint8_t *)buffer)); // re init the stream
     buffer += sizeof(uint8_t); // move in the buffer of the size of the type
-    size_t len;
     switch (s->type)
     {
-        // if content is an int
         case VERIFY_LETTER:
         case SEND_LENGTH:
             s->content = malloc(sizeof(buffer));

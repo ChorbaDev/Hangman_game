@@ -38,6 +38,9 @@ void displayHangman(int length, int fdSocket) {
 
         //if number of errors made equals max number of errors the client lose the game
         if(strlen(errors)==MAX_ERRORS){
+            init_stream(&stream,GAME_LOST);
+            serStreamSize = serialize_stream(&stream, serStream);
+            send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
             printf(FONT_RED"\n           Vous avez perdu :( !"FONT_DEFAULT);
             break;
         }
