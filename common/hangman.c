@@ -14,10 +14,11 @@
 #include "hangman.h"
 #include "playerInfo.c"
 #include "wordMask.c"
+#include "drawHangman.c"
 #include "style.h"
-#define MAX_ERRORS 7
+#define MAX_ERRORS 6
 
-bool existIn(char i, char errors[7]);
+bool checkLetter(char i);
 
 void displayHangman(int length, int fdSocket) {
     stream_t stream;
@@ -38,20 +39,27 @@ void displayHangman(int length, int fdSocket) {
         printf(FONT_YELLOW"\n           BIENVENUE DANS LA JEU DE PENDU!!!\n"FONT_DEFAULT);
 
         wrongGuess((int)strlen(errors));
+        if(strlen(errors)==MAX_ERRORS){
+            printf(FONT_RED"\n           Vous avez perdu :( !"FONT_DEFAULT);
+            break;
+        }
         printf("\nVotre mot est: ");
         for (int i = 0; i < length; i++) {
-            printf(FONT_GREEN"%c",wordMask[i]);
+            printf(FONT_GREEN"%c", toupper(wordMask[i]));
         }
         printf(FONT_RED"\nErreurs : ");
         for (int i = 0; i < MAX_ERRORS; i++) {
             printf(FONT_RED" %c ", toupper(errors[i]));
         }
+        printf(FONT_YELLOW"\nIl vous reste %lu essais ",MAX_ERRORS- strlen(errors));
         //
-        printf(FONT_DEFAULT"\nDonner une lettre : ");
         char *c;
         int input = 0;
-        while (!input || input == 10 || existIn((char)input,errors))
+        printf(FONT_DEFAULT"\nDonner une lettre alphabitique : ");
+        while (!input || input == 10 || existIn((char)input,errors) || !isalpha((char)input)){
             input = getchar();
+        }
+
         char inputChar = (char) input;
         //
         stream.content = NULL;
@@ -70,9 +78,6 @@ void displayHangman(int length, int fdSocket) {
         editWordMask(wordMask, boolMask, inputChar);
         if(!strchr(wordMask,inputChar)){
             strncat(errors, &inputChar,1);
-            if(strlen(errors)==MAX_ERRORS){
-                loop=0;
-            }
         }
         if(!strchr(wordMask,'-')){
             loop=0;
@@ -157,230 +162,15 @@ int randomNumber(int from, int to) {
     return rand() % (to - from) + from;
 }
 
-char *getDashedWord(char *word) {
-    int i = 0;
-
-    // Get the word length
-    size_t wordLength = strlen(word);
-
-    // Allocate same memory to new dashed word
-    char *dashedWord = malloc(wordLength * sizeof(char));
-
-    // Dash the word
-    for (i = 0; i < strlen(word); i++) {
-        dashedWord[i] = '_';
-    }
-
-    return dashedWord;
-}
 
 gameConfigStruct initGame() {
     gameConfigStruct gameConfig = *(gameConfigStruct *) malloc(
             sizeof(gameConfigStruct)); // allocate the size of a gameConfigStruct
-    for (int i = 0;
-         i < PLAYERS_AMOUNT; i++)                                                 // init every player of the array
+    for (int i = 0;i < PLAYERS_AMOUNT; i++) {
         gameConfig.players[i] = initInfo();
-
+    }                                                // init every player of the array
     return gameConfig;
 }
 //#############################################
 
-void wrongGuess(int mistake) {
-    switch (mistake) {
-        case 0:
-            //0 erreurs on doit juste print la potence
-            Potence();
-            for(int Cont = 0; Cont < 9; Cont++)
-                printf("\n    │ \n    │ ");
-
-            printf("\n ───┴───\n");
-            break;
-        case 1:
-            //1 erreur donc tete
-            Head();
-            for(int Cont = 0; Cont < 6; Cont++)
-                printf("\n    │ \n    │ ");
-
-            printf("\n    │ \n ───┴───\n");
-            break;
-        case 2:
-            //2 erreurs donc corps
-            Body();
-            break;
-        case 3:
-            //3 erreurs donc bras droit
-            rArm();
-            break;
-        case 4:
-            //4 erreurs donc bras gauche
-            lArm();
-            for(int Cont = 0; Cont < 4; Cont++)
-                printf("\n    │ \n    │");
-
-            printf("\n ───┴───\n");
-            break;
-        case 5:
-            //5 erreurs donc jambe droite
-            rLeg();
-            break;
-        case 6:
-            //6 erreurs donc jambe gauche
-            lLeg();
-            perdu();
-            break;
-        default:
-            //perdu
-            lLeg();
-    }
-}
-//##############################################################
-//dessine la potence
-void Potence(){
-    printf("\n    ┌");
-
-    for(int Cont = 0; Cont < 5; Cont++)
-        printf("──────");
-
-    printf("┐ \n    │ \t\t\t\t   │ \n    │ \t\t\t\t   │");
-}
-//dessine la tête
-void Head(){
-    Potence();
-    printf("\n    │ \t\t\t       ┌───┴───┐");
-    printf("\n    │ \t\t\t       │ ^   ^ │");
-    printf("\n    │ \t\t\t       │   .   │");
-    printf("\n    │ \t\t\t       │  ---  │");
-    printf("\n    │ \t\t\t       └───┬───┘");
-}
-// dessine le corps
-void Body(){
-    Head();
-
-    for(int Cont = 0; Cont < 2; Cont++)
-        printf("\n    │ \t\t\t\t   │ \n    │ \t\t\t\t   │");
-
-    printf("\n    │ \t\t\t\t   │");
-
-    for(int Cont = 0; Cont < 4; Cont++)
-        printf("\n    │ \n    │");
-
-    printf("\n ───┴───\n");
-}
-// dessine le bras droit
-void rArm(){
-    Head();
-
-    printf("\n    │ \t\t\t\t   │");
-    printf("\n    │ \t\t\t       ┌───┤");
-    for(int Cont = 0; Cont < 2; Cont++)
-        printf("\n    │ \t\t\t       │   │");
-
-    printf("\n    │ \t\t\t       ┼   │");
-
-    for(int Cont = 0; Cont < 4; Cont++)
-        printf("\n    │ \n    │");
-
-    printf("\n ───┴───\n");
-}
-// dessine le bras gauche
-void lArm(){
-    Head();
-
-    printf("\n    │ \t\t\t\t   │");
-    printf("\n    │ \t\t\t       ┌───┼───┐");
-
-    for(int Cont = 0; Cont < 2; Cont++)
-        printf("\n    │ \t\t\t       │   │   │");
-
-    printf("\n    │ \t\t\t       ┼   │   ┼");
-}
-//dessine la jambe droite
-void rLeg(){
-    lArm();
-
-    printf("\n    │ \t\t\t          / \n    │ \t\t\t         /");
-    printf("\n    │ \t\t\t        / \n    │ \t\t\t       /");
-    printf("\n    │  \t\t\t      / \n    │ ");
-    printf("\n    │ \n    │ \n ───┴───\n");
-}
-// dessine la jambe gauche
-void lLeg(){
-    Potence();
-
-    printf("\n    │ \t\t\t       ┌───┴───┐");
-    printf("\n    │ \t\t\t       │ x   x │");
-    printf("\n    │ \t\t\t       │   .   │");
-    printf("\n    │ \t\t\t       │   +   │");
-    printf("\n    │ \t\t\t       └───┬───┘");
-    printf("\n    │ \t\t\t\t└──┼──┘");
-    printf("\n    │ \t\t\t       ┌───┼───┐");
-
-    for(int Cont = 0; Cont < 2; Cont++)
-        printf("\n    │ \t\t\t       │   │   │");
-
-    printf("\n    │ \t\t\t       ┼   │   ┼");
-    printf("\n    │ \t\t\t          / \\ \n    │ \t\t\t         /   \\");
-    printf("\n    │ \t\t\t        /     \\ \n    │ \t\t\t       /       \\");
-    printf("\n    │  \t\t\t      /         \\ \n    │ ");
-    printf("\n    │ \n    │ \n ───┴───\n");
-}
-
-void perdu(){
-    // affichage du mot et dire que le gars à perdu on lui propose de recommencer
-}
-void gagne(){
-    // affichage du message de victoire
-}
-// dessine le pendu en position gagnante
-void potenceGagnant(){
-    Potence();
-    printf("\n    │ \t\t\t\t  /┴\\ \n    │ \t\t\t\t /   \\ \n    │ \t\t\t\t/     \\");
-    printf("\n    │ \t\t\t       └───────┘");
-    printf("\n    │ \t\t┌───────┐");
-    printf("\n    │      ┬    │ ^   ^ │    ┬    ");
-    printf("\n    │      │    │   .   │    │    ");
-    printf("\n    │      \\    │ [___] │    /   ");
-    printf("\n    │       \\   └───────┘   / ");
-    printf("\n    │ \t     \\      │      / ");
-    printf("\n    │ \t      \\─────│─────/ ");
-    printf("\n    │ \t\t    │ \n    │ \t\t    │ \n    │ \t\t    │");
-    printf("\n    │ \t\t   / \\ \n    │ \t\t  /   \\       ");
-    printf("\n    │ \t\t /     \\ \n    │ \t\t/       \\     ");
-    printf("\n ───┴───      ──┘       └──\n");
-}
-int Restart_Or_Exit() {
-    int Cont;
-    char Output;
-
-    do {
-        Output = getchar();
-
-        if (Output == 'n' || Output == 'N') {
-            system("clear");
-
-            printf("\n\n   ┌");
-
-            for (Cont = 0; Cont < 8; Cont++)
-                printf("──────");
-
-            printf("┐ \n   │");
-
-            printf("\t\t Bien joué!! A bientot!!");
-
-            printf("\t    │ \n   └");
-
-            for (Cont = 0; Cont < 8; Cont++)
-                printf("──────");
-
-            printf("┘ \n\n\n\n");
-
-            return 0;
-        }
-
-        if (Output == 'y' || Output == 'Y') {
-            system("clear");
-            return 10;
-        }
-    } while (Output != 'Y' && Output != 'y' && Output != 'N' && Output != 'n');
-}
 

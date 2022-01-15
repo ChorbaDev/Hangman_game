@@ -14,32 +14,11 @@ typedef struct
 } gameConfigStruct;
 
 gameConfigStruct initGame();
-char * getDashedWord(char * word);
 void runGame(char * word);
 void displayHangman(int length,int fdSocket);
+bool existIn(char i, char errors[]);
+int randomNumber(int from, int to);
+char **readFile(int fileDescriptor, int *wordsTotal);
+int openFile(const char *path);
 int checkAnswer(char letterTyped, char * word, char * dashedWord);
-void wrongGuess(int mistake);
-/// PRITING BASIC STRUCTURE OF GALLOWS
-void Potence ();
-
-/// PRITING HEAD
-void Head ( );
-
-/// PRITING BODY
-void Body ( );
-
-/// PRITING RIGHT ARM
-void rArm ( );
-
-/// PRITING LEFT ARM
-void lArm ( );
-
-/// PRITING RIGHT LEG
-void rLeg ( );
-
-/// PRITING LEFT LEG
-void lLeg ( );
-
-void perdu();
-void potenceGagnant();
 #endif //PRJ_HANGMANC_HANGMAN_H

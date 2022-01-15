@@ -22,8 +22,12 @@ enum
 {
     INT,                           //? content : int
     SEND_DASHBOARD,
+    ASK_FOR_DASHBOARD,
     SEND_HANGMAN,
-    ASK_FOR_WORD,
+    ASK_FOR_LENGTH,
+    ASK_FOR_NBCLIENTS,
+    ASK_FOR_ID,
+    SEND_ID,
     SEND_MASK,
     VERIFY_LETTER,
     SEND_LENGTH,

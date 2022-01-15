@@ -51,13 +51,20 @@ void set_content(stream_t *s, void *content)
             memcpy(s->content, (char *)content, strlen((char *)content)+1);
             break;
         case SEND_LENGTH:
-        case INT:
             sprintf(value,"%lu", strlen((char *)content));
             s->content = malloc(sizeof(strlen(value)));
             memcpy(s->content, value, (int)sizeof(content));
             break;
+        case SEND_ID:
+        case INT:
+            s->content = malloc(sizeof(int8_t));
+            memcpy(s->content, content, 1);
+            break;
+        case SEND_DASHBOARD:
+            s->content = malloc(PLAYERS_AMOUNT * sizeof(infoStruct)); // allocate the memory for the array
+            memcpy(s->content, content, PLAYERS_AMOUNT * sizeof(infoStruct));        // copy content
+            break;
         case SEND_MASK:
-
             s->content = malloc(sizeof(content) * sizeof(bool)); // allocate the memory for the array
             memcpy(s->content, content, sizeof (content));        // copy content
             break;
@@ -66,7 +73,7 @@ void set_content(stream_t *s, void *content)
     }
 }
 void set_content_mask(stream_t *s, void *content,int length){
-    s->content = malloc(length); // allocate the memory for the array
+    s->content = malloc(length*sizeof(bool)); // allocate the memory for the array
     memcpy(s->content, content, length);        // copy content
 }
 /**
@@ -95,9 +102,13 @@ size_t serialize_stream(stream_t *s, void *buffer)
         // if content is NULL
         case END_CONNECTION:
         case ERROR:
-        case ASK_FOR_WORD:
+        case ASK_FOR_LENGTH:
+        case ASK_FOR_DASHBOARD:
+        case ASK_FOR_NBCLIENTS:
+        case ASK_FOR_ID:
             return sizeof(uint8_t);
         case SUCCESS:
+            buffer += sizeof(uint8_t);
             len = strlen((char *)s->content);
             *((uint64_t *)buffer) = len;
             buffer += sizeof(uint64_t);
@@ -106,10 +117,15 @@ size_t serialize_stream(stream_t *s, void *buffer)
             // if content is an int
         case VERIFY_LETTER:
         case SEND_LENGTH:
-            case INT:
+        case INT:
             memcpy(buffer, s->content, 1); // copy the int
             return sizeof(uint8_t) + sizeof(uint8_t);
-            // if content is a bool[]
+        case SEND_ID:
+            memcpy(buffer, s->content, 1); // copy the int
+            return sizeof(uint8_t) + sizeof(char);
+        case SEND_DASHBOARD:
+            memcpy(buffer, s->content, sizeof(infoStruct)*PLAYERS_AMOUNT); // copy the array
+            return sizeof(uint8_t) + sizeof(infoStruct)*PLAYERS_AMOUNT;
         case SEND_MASK:
             memcpy(buffer, s->content, sizeof(s->content) ); // copy the array
             return sizeof(uint8_t) + sizeof(s->content);
@@ -143,6 +159,10 @@ void unserialize_stream(void *buffer, stream_t *s)
             s->content = malloc((len + 1) * sizeof(char)); // allocate the size of the string
             memcpy(s->content, buffer, len);               // copy content
             ((char *)s->content)[len] = '\0';              // set the last char as '\0' to end the string
+            break;
+        case SEND_DASHBOARD:
+            s->content = malloc(sizeof(infoStruct)*PLAYERS_AMOUNT); // allocate the size of an int
+            memcpy(s->content, buffer,sizeof(infoStruct)*PLAYERS_AMOUNT );       // copy the int
             break;
         case SEND_MASK:
             s->content = malloc(sizeof(s->content)); // allocate the size of the array

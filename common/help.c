@@ -62,7 +62,7 @@ int promptInt(char *buffer, int length, int min, int max)
         ret = (int)strtol(buffer, &endPtr, 10); // convert to int
         // if strtol did not found a matching int, or if the int is now in the interval, then we ask the client to prompt a new int
         if (buffer == endPtr || ret < min || ret > max)
-            printf("Veuillez rentrer un entier entre %d et %d : ", min, max);
+            printf("\nVeuillez rentrer un entier entre %d et %d : ", min, max);
         else // else we return the good int
             return ret;
     }

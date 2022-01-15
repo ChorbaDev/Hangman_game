@@ -20,9 +20,16 @@ void editBoolMask(char* character, bool *pInt, char *word) {
     }
 }
 void editWordMask(char *wmask, const bool *bmask, char character){
+
     for(int k=0; k < strlen(wmask); ++k) {
         if (bmask[k]==1 && wmask[k]=='-') {
             wmask[k]=character;
         }
     }
+}
+bool winningGame(bool *b,int len){
+    for (int i=0;i< len;i++){
+        if(b[i]==false) return false;
+    }
+    return true;
 }

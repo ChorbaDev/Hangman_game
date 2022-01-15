@@ -1,7 +1,3 @@
-//
-// Created by omar on 08/01/2022.
-//
-
 #include <stdlib.h>
 #include "playerInfo.h"
 #include "help.c"
@@ -11,21 +7,16 @@
  */
 infoStruct initInfo()
 {
-    infoStruct info = *(infoStruct *)malloc(sizeof(infoStruct)); // allocate the size of a seatStruct
+    infoStruct info=*(infoStruct*) malloc(sizeof(infoStruct)) ; // allocate the size of a infoStruct
+    info.wins=0;
+    info.connectionID=0;
     return info;
 }
-
-
-/**
- * Generate a code for a buffer
- * @param code the buffer that will contain the code string
- */
-void generateCode(char *code)
-{
-    for (int i = 0; i < CODE_LENGTH; i++)
-    {
-        code[i] = randomNumber(48, 57); // 48 is '0' and 57 is '9'
+int existAt(int id, infoStruct players[]){
+    for(int i=0;i<PLAYERS_AMOUNT;i++){
+        if(players[i].connectionID==id)
+            return i;
     }
-    code[CODE_LENGTH] = '\0'; // set the end of the string
+    return -1;
 }
 

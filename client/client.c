@@ -60,7 +60,7 @@ void connectedToServer(int fdSocket)
     char string[BUFFER_SIZE];    // buffer for strings
     int8_t promptedInt;          // integer that is used when an integer is prompted to the client
     bool loop = 1;               // loop that let the client do something until he leave
-
+    int bufSize;
     do
     {
         printf(FONT_BLUE "\n*--------------------- BIENVENUE ---------------------*" FONT_DEFAULT "\n" FONT_RED "0/" FONT_DEFAULT
@@ -82,7 +82,15 @@ void connectedToServer(int fdSocket)
                 startGame(fdSocket, &stream, string, serStream);
                 break;
             case 2:
-                dashboardPanel(fdSocket, &stream, string, serStream);
+                init_stream(&stream, ASK_FOR_ID);
+                serStreamSize = serialize_stream(&stream, serStream);
+                send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+                int communicationId=0;
+                bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
+                unserialize_stream(serStream, &stream);
+                char* words= ((char *) serStream);
+                communicationId= atoi(&words[strlen(words)-1]);
+                dashboardPanel(fdSocket,communicationId, &stream, string, serStream);
                 break;
         }
     } while (loop == 1);
@@ -103,7 +111,7 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
     int bufSize;          // contain the return of recv()
     bool loop = 1;
     do{
-        init_stream(stream, ASK_FOR_WORD); // ask the server for a word
+        init_stream(stream, ASK_FOR_LENGTH); // ask the server for a word
         serStreamSize = serialize_stream(stream, serStream);
         send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
         bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
@@ -113,13 +121,16 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
             continue; // go to the next iteration of this while loop
         }
         char* word= ((char *) serStream);
-        puts(word);
         word_length= atoi(&word[strlen(word)-1]);
         displayHangman(word_length,fdSocket);
         break;
     }while(loop);
 }
-
+int compareFn (const void * a, const void * b) {
+    int c=((infoStruct *)a)->wins,d=((infoStruct *)b)->wins;
+    printf("\n%d\n",c - d);
+    return ( d - c );
+}
 /**
  * Function that shows the dashboard
  * @param communicationID the id of the communication
@@ -127,9 +138,42 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
  * @param string the buffer that contain the string
  * @param serStream the buffer that will contain the serialized stream
  */
-void dashboardPanel(int fdSocket, stream_t *stream, char *string, char *serStream)
+void dashboardPanel(int fdSocket,int communicationID, stream_t *stream, char *string, char *serStream)
 {
+    size_t serStreamSize; // variable that will contain the size of setStream
+    int bufSize;          // contain the return of recv()
+        init_stream(stream, ASK_FOR_NBCLIENTS); // ask the server for a word
+        serStreamSize = serialize_stream(stream, serStream);
+        send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+        bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
+        if (bufSize >= 0)
+        {
+            char* word= ((char *) serStream);
+            int len= atoi(&word[strlen(word)-1]);
 
+            init_stream(stream, ASK_FOR_DASHBOARD);
+            serStreamSize = serialize_stream(stream, serStream);
+            send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+            bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
+            if (bufSize >= 0)
+            {
+                unserialize_stream(serStream, stream);
+                infoStruct* players= (infoStruct*) stream->content;
+                qsort(players,len,sizeof(infoStruct),compareFn );
+                printf(FONT_BLUE "\n*--------------------- TABLEAU DE BORD ---------------------*\n" FONT_DEFAULT);
+                puts("┌──────────────────────────────┐");
+                puts("│      ID       │     Score    │");
+                puts("└──────────────────────────────┘");
+                puts("┌──────────────────────────────┐");
+                for (int i = 0; i <len; ++i) {
+                    if(players[i].connectionID==communicationID)
+                        printf("│" FONT_GREEN "       %d"FONT_DEFAULT"       │"FONT_GREEN"       %d      "FONT_DEFAULT"│\n",players[i].connectionID,players[i].wins);
+                    else
+                        printf("│       %d       │       %d      │\n",players[i].connectionID,players[i].wins);
+                }
+                puts("└──────────────────────────────┘\n");
+            }
+        }
 }
 
 

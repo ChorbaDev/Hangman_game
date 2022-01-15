@@ -5,16 +5,16 @@
 #ifndef PRJ_HANGMANC_PLAYERINFO_H
 #define PRJ_HANGMANC_PLAYERINFO_H
 
-#define NAME_SIZE 100
 #define CODE_LENGTH 10
 #define PLAYERS_AMOUNT 10
 
 typedef struct
 {
     int  wins;
-    char code[CODE_LENGTH + 1];
+    int connectionID;
 } infoStruct;
 
 infoStruct initInfo();
-void generateCode(char *);
+
+int existAt(int id, infoStruct players[]);
 #endif //PRJ_HANGMANC_PLAYERINFO_H
