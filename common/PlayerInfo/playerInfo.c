@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "playerInfo.h"
-#include "help.c"
+#include "../Help/help.c"
 /**
  * Initialize a infoStruct instance
  * @return the seat

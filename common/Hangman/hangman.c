@@ -7,12 +7,12 @@
 #include <time.h>        // "Used the chronological time"
 #include <sys/socket.h>
 
-#include "stream.h"
+#include "../Stream/stream.h"
 #include "hangman.h"
-#include "playerInfo.c"
-#include "wordMask.c"
-#include "drawHangman.c"
-#include "style.h"
+#include "../PlayerInfo/playerInfo.c"
+#include "../WordMask/wordMask.c"
+#include "../DrawHangman/drawHangman.c"
+#include "../style.h"
 #define MAX_ERRORS 6
 
 void displayHangman(int length, int fdSocket) {
@@ -27,6 +27,7 @@ void displayHangman(int length, int fdSocket) {
 
     initWordMask( wordMask, length);
     initBoolMask(boolMask,length);
+
     while(loop){
         system("clear");
 

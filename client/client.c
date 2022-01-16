@@ -7,17 +7,18 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdbool.h>
-#include <stdarg.h> // for infinite parameters
+#include <stdarg.h>
 
 #include "client.h"
 #include "../common/style.h"
-#include "../common/hangman.c"
-#include "../common/stream.c"
+#include "../common/Hangman/hangman.c"
+#include "../common/Stream/stream.c"
 
 
 #define ADDRESS "127.0.0.1"
 
 int main(){
+    system("clear");
     // Get the socket
     int fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (fdSocket < 0)
@@ -26,18 +27,21 @@ int main(){
         exit(EXIT_FAILURE);
     }
 
+    //set server coords
     struct sockaddr_in serverCoords;
     memset(&serverCoords, 0x00, sizeof(struct sockaddr_in)); // allocate memory
     serverCoords.sin_family = PF_INET;                               // Set protocal family
     inet_aton(ADDRESS, &serverCoords.sin_addr);              // put server address to our struct
     serverCoords.sin_port = htons(PORT);                    // set address port
 
+    //connect to the server
     if (connect(fdSocket, (struct sockaddr *)&serverCoords, sizeof(serverCoords)) == -1)
     {
         exit(EXIT_FAILURE);
     }
 
     printf(FONT_GREEN "\n \nConnected to %s:%d\n \n" FONT_DEFAULT, ADDRESS, PORT);
+
     // call the function that manage the connection
     connectedToServer(fdSocket);
 
@@ -61,6 +65,7 @@ void connectedToServer(int fdSocket)
 
     do
     {
+        //system("clear");
         printf(FONT_BLUE "\n*--------------------- BIENVENUE ---------------------*" FONT_DEFAULT "\n" FONT_RED "0/" FONT_DEFAULT
         " Quitter\n"
         "1/ Commencer une partie\n"
@@ -77,18 +82,19 @@ void connectedToServer(int fdSocket)
                 send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
                 break;
             case 1:
-                startGame(fdSocket, &stream, string, serStream);
+                startGame(fdSocket, &stream, serStream);
                 break;
             case 2:
+                //send the request ID to the server so we can color it in green in the
                 init_stream(&stream, ASK_FOR_ID);
                 serStreamSize = serialize_stream(&stream, serStream);
                 send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
-                int communicationId=0;
                 bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
                 unserialize_stream(serStream, &stream);
-                char* words= ((char *) serStream);
-                communicationId= atoi(&words[strlen(words)-1]);
-                dashboardPanel(fdSocket,communicationId, &stream, string, serStream);
+                int communicationId=0;
+                char* id= ((char *) serStream);
+                communicationId= atoi(&id[strlen(id)-1]);
+                dashboardPanel(fdSocket,communicationId, &stream, serStream);
                 break;
         }
     } while (loop == 1);
@@ -103,14 +109,15 @@ void connectedToServer(int fdSocket)
  * @param serStream the buffer that will contain the serialized stream
  */
 int word_length;
-void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
+void startGame(int fdSocket, stream_t *stream, char *serStream)
 {
     size_t serStreamSize; // variable that will contain the size of setStream
     int bufSize;          // contain the return of recv()
 
-        init_stream(stream, ASK_FOR_LENGTH); // ask the server for a word
+        init_stream(stream, ASK_FOR_LENGTH); // ask the server for the length of the word
         serStreamSize = serialize_stream(stream, serStream);
         send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+        //receiving the length
         bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
         if (bufSize < 1)
         {
@@ -118,6 +125,7 @@ void startGame(int fdSocket, stream_t *stream, char *string, char *serStream)
         }
         char* word= ((char *) serStream);
         word_length= atoi(&word[strlen(word)-1]);
+        //function that displays hangman
         displayHangman(word_length,fdSocket);
 }
 int compareFn (const void * a, const void * b) {
@@ -131,19 +139,22 @@ int compareFn (const void * a, const void * b) {
  * @param string the buffer that contain the string
  * @param serStream the buffer that will contain the serialized stream
  */
-void dashboardPanel(int fdSocket,int communicationID, stream_t *stream, char *string, char *serStream)
+void dashboardPanel(int fdSocket,int communicationID, stream_t *stream, char *serStream)
 {
-    size_t serStreamSize; // variable that will contain the size of setStream
-    int bufSize;          // contain the return of recv()
-        init_stream(stream, ASK_FOR_NBCLIENTS); // ask the server for a word
+    size_t serStreamSize;
+    int bufSize;
+
+        init_stream(stream, ASK_FOR_NBCLIENTS); // ask the server for the total number of clients
         serStreamSize = serialize_stream(stream, serStream);
         send(fdSocket, serStream, serStreamSize, 0); // send buffer to server
+
         bufSize = recv(fdSocket, serStream, STREAM_SIZE, 0);
         if (bufSize >= 0)
         {
             char* word= ((char *) serStream);
             int len= atoi(&word[strlen(word)-1]);
 
+            //ask for players info (id,score)
             init_stream(stream, ASK_FOR_DASHBOARD);
             serStreamSize = serialize_stream(stream, serStream);
             send(fdSocket, serStream, serStreamSize, 0); // send buffer to server

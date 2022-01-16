@@ -1,8 +1,8 @@
 #ifndef PRJ_HANGMANC_HANGMAN_H
 #define PRJ_HANGMANC_HANGMAN_H
 
-#include "playerInfo.h"
-#include "stream.h"
+#include "../PlayerInfo/playerInfo.h"
+#include "../Stream/stream.h"
 
 typedef struct
 {

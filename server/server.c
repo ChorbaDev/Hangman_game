@@ -12,9 +12,6 @@
 #include <stdbool.h>
 
 #include "server.h"
-#include "../common/style.h"
-#include "../common/hangman.c"
-#include "../common/stream.c"
 
 
 struct sockaddr_in serverAddr;
@@ -25,8 +22,8 @@ int nbClient=0;
  * @return exit status (EXIT_FAILURE || EXIT_SUCCESS)
  */
 int main(int argc, char *argv[]){
-    bool loop = 1;
     system("clear");
+    bool loop = 1;
     //? set the randomness of the program
     srand((unsigned int)time(NULL));
     //

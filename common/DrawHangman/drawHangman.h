@@ -21,7 +21,10 @@ void rLeg ( );
 /// PRITING LEFT LEG
 void lLeg ( );
 
-void perdu();
+///PRINTING THE WINNING HANGMAN
 void potenceGagnant();
+
+///DECIDE THE PART TO DRAW
 void wrongGuess(int mistake);
+
 #endif //PRJ_HANGMANC_DRAWHANGMAN_H

@@ -1,7 +1,3 @@
-//
-// Created by omar on 09/01/2022.
-//
-
 #include <string.h>
 #include <stdbool.h>
 #include "stream.h"
