@@ -3,10 +3,14 @@
   <img src="https://user-images.githubusercontent.com/53189749/149657701-486eb61b-99b7-4bc2-8a5a-f7300d1cc385.png" />
 </p>
 <p align="center">
-  <img src="https://img.shields.io/tokei/lines/github.com/ChorbaDev/prj_HangmanC?style=for-the-badge" />
-  <img src="https://img.shields.io/github/repo-size/ChorbaDev/prj_HangmanC?style=for-the-badge" />
-  <img src="https://img.shields.io/github/directory-file-count/ChorbaDev/prj_HangmanC?style=for-the-badge" />
+  <img src="https://img.shields.io/tokei/lines/github.com/ChorbaDev/Hangman_game?style=for-the-badge" />
+  
+  <img src="https://img.shields.io/github/repo-size/ChorbaDev/Hangman_game?style=for-the-badge" />
+  
+  <img src="https://img.shields.io/github/forks/ChorbaDev/Hangman_game?style=for-the-badge" />
+  
   <img src="https://user-images.githubusercontent.com/53189749/149659532-1fda23f1-c3cc-4aef-9476-8fb06ab9edef.png" />
+  
 </p>
 
 ### Description
