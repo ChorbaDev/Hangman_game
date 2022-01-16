@@ -40,4 +40,4 @@ After that, the game begins and the client starts to send suggestions (letters) 
 <br>
 The client (Player) can see the dashboard that contains all the scores with a descending sort of the scores
 and his score will appear in green.
-![](../../Personal-Portfolio-v1/img/portfolio/autres/SystemC/5.png)
+![dashboard](https://user-images.githubusercontent.com/53189749/149659733-135f1c02-cdba-4339-87b7-4e49f42c4686.png)
