@@ -4,8 +4,9 @@
 ![Lines of code](https://img.shields.io/tokei/lines/github.com/ChorbaDev/prj_HangmanC?style=for-the-badge)
 ![GitHub repo size](https://img.shields.io/github/repo-size/ChorbaDev/prj_HangmanC?style=for-the-badge)
 ![GitHub repo file count](https://img.shields.io/github/directory-file-count/ChorbaDev/prj_HangmanC?style=for-the-badge)
-![lose](../../Personal-Portfolio-v1/img/portfolio/autres/SystemC/3.png)
-![win](../../Personal-Portfolio-v1/img/portfolio/autres/SystemC/4.png)
+![lose](https://user-images.githubusercontent.com/53189749/149659532-1fda23f1-c3cc-4aef-9476-8fb06ab9edef.png)
+![win](https://user-images.githubusercontent.com/53189749/149659538-e3f447e9-695f-4420-ad8d-93ae808c7763.png)
+
 ### Description
 Hangman game written in C language using treads.
 ### What is Hangman?
@@ -37,4 +38,5 @@ After that, the game begins and the client starts to send suggestions (letters) 
 <br>
 The client (Player) can see the dashboard that contains all the scores with a descending sort of the scores
 and his score will appear in green.
-![](../../Personal-Portfolio-v1/img/portfolio/autres/SystemC/5.png)
+![dashboard](https://user-images.githubusercontent.com/53189749/149659559-a6bade55-a1a0-4f24-a9fa-a185d9f31461.png)
+
