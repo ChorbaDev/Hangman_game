@@ -135,6 +135,7 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
             // stop the loop that manage the client
             case END_CONNECTION:
                 loop = 0;
+                nbClient--;
                 break;
             case ASK_FOR_LENGTH:
                 init_stream(&stream,SEND_LENGTH);
@@ -158,7 +159,6 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
             case VERIFY_LETTER:
                 character= ((char *) stream.content);       //the character sent by the client
                 editBoolMask(character, mask, chosenWord);
-
                 // if last character sent is true so we increment the number of wins for the client
                 if(winningGame(mask, strlen(chosenWord))){
                     printf(FONT_GREEN"\nBingo!"FONT_DEFAULT" le joueur "FONT_GREEN"%d"FONT_DEFAULT" a trouvé le mot ("FONT_YELLOW"%s"FONT_DEFAULT")\n",communicationID,chosenWord);
