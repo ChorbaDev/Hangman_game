@@ -140,7 +140,7 @@ void clientConnected(int communicationID, gameConfigStruct *gameConfig)
                 init_stream(&stream,SEND_LENGTH);
 
                 //choose randomly a word from the list
-                wordsFileDescriptor = openFile("hangmanwords.txt");
+                wordsFileDescriptor = openFile("server/hangmanwords.txt");
                 wordsList = readFile(wordsFileDescriptor, &wordsTotal);
                 int random = randomNumber(0, wordsTotal);
                 while(strlen(chosenWord=wordsList[random])<3);

@@ -37,6 +37,7 @@ int main(){
     //connect to the server
     if (connect(fdSocket, (struct sockaddr *)&serverCoords, sizeof(serverCoords)) == -1)
     {
+        printf(FONT_RED "Connection failed\n" FONT_DEFAULT);
         exit(EXIT_FAILURE);
     }
 
@@ -65,7 +66,6 @@ void connectedToServer(int fdSocket)
 
     do
     {
-        //system("clear");
         printf(FONT_BLUE "\n*--------------------- BIENVENUE ---------------------*" FONT_DEFAULT "\n" FONT_RED "0/" FONT_DEFAULT
         " Quitter\n"
         "1/ Commencer une partie\n"

@@ -68,7 +68,6 @@ int promptInt(char *buffer, int length, int min, int max)
  */
 int openFile(const char *path) {
     int fileDescriptor = open(path, O_RDONLY);
-
     if (fileDescriptor == -1) {
         printf("Error while opening file\n");
         exit(-1);
