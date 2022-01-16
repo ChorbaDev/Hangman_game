@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
     }
     //
     memset(&serverAddr, 0x00, sizeof(struct sockaddr_in));   // allocate memory
-    serverAddr.sin_family = PF_INET;                                 // Set protocal family
+    serverAddr.sin_family = PF_INET;                                 // Set protocol family
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);          // set address
     serverAddr.sin_port = htons(PORT);                      // set address port
     if (bind(serverSocket, (struct sockaddr *)&serverAddr,
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
 
 
     }
-    // closing the serveur
+    // closing the server
     close(serverSocket);
 
     return EXIT_SUCCESS;
