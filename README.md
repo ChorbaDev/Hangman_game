@@ -7,7 +7,7 @@
   
   <img src="https://img.shields.io/github/repo-size/ChorbaDev/Hangman_game?style=for-the-badge" />
   
-  <img src="https://img.shields.io/github/directory-file-count/ChorbaDev/Hangman_game?style=for-the-badge" />
+  <img src="https://img.shields.io/github/forks/ChorbaDev/Hangman_game?style=for-the-badge" />
   
   <img src="https://user-images.githubusercontent.com/53189749/149659532-1fda23f1-c3cc-4aef-9476-8fb06ab9edef.png" />
   
